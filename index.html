@@ -1,0 +1,617 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#11110f">
+  <title>Pellicule — Le cinéma, à votre façon</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #11110f;
+      --surface: #1a1a17;
+      --surface-2: #22221e;
+      --text: #f5f2e9;
+      --muted: #9d9a8f;
+      --accent: #d7f36a;
+      --line: rgba(245, 242, 233, .1);
+      --sidebar: 238px;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font: 15px/1.5 Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    button, input { font: inherit; }
+    button { color: inherit; }
+    .app { min-height: 100vh; }
+
+    .sidebar {
+      width: var(--sidebar);
+      position: fixed;
+      inset: 0 auto 0 0;
+      z-index: 4;
+      padding: 31px 20px;
+      background: #151512;
+      border-right: 1px solid var(--line);
+      display: flex;
+      flex-direction: column;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      margin: 0 0 48px 6px;
+      color: var(--text);
+      text-decoration: none;
+      font-weight: 750;
+      font-size: 19px;
+      letter-spacing: -.7px;
+    }
+    .brand-mark {
+      width: 30px;
+      height: 30px;
+      display: grid;
+      place-items: center;
+      background: var(--accent);
+      color: #17180f;
+      border-radius: 9px;
+    }
+    .brand-mark svg { width: 18px; height: 18px; }
+    .nav-label {
+      color: #716f66;
+      font-size: 10px;
+      font-weight: 750;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      margin: 0 0 12px 12px;
+    }
+    .nav { display: grid; gap: 5px; }
+    .nav-button {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 13px;
+      padding: 11px 12px;
+      color: #a7a49a;
+      background: transparent;
+      border: 0;
+      border-radius: 9px;
+      text-align: left;
+      cursor: pointer;
+      transition: background .2s, color .2s;
+    }
+    .nav-button:hover, .nav-button.active { background: #25251f; color: var(--text); }
+    .nav-button.active { box-shadow: inset 2px 0 var(--accent); }
+    .nav-button svg { width: 18px; height: 18px; flex: none; }
+    .nav-count {
+      margin-left: auto;
+      font-size: 11px;
+      color: var(--muted);
+      background: #303029;
+      padding: 1px 7px;
+      border-radius: 20px;
+    }
+    .sidebar-bottom { margin-top: auto; }
+    .note-card {
+      padding: 15px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .note-card strong { display: block; color: var(--text); margin-bottom: 5px; font-size: 13px; }
+    .note-card p { margin: 0; }
+
+    .main { margin-left: var(--sidebar); min-height: 100vh; }
+    .topbar {
+      height: 74px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      padding: 0 5.2%;
+      border-bottom: 1px solid var(--line);
+    }
+    .breadcrumb { color: var(--muted); font-size: 13px; }
+    .breadcrumb strong { color: var(--text); font-weight: 550; }
+    .search-wrap { position: relative; width: min(320px, 42vw); }
+    .search-wrap svg { position: absolute; width: 17px; height: 17px; left: 13px; top: 50%; transform: translateY(-50%); color: #8d8a80; pointer-events: none; }
+    .search {
+      width: 100%;
+      height: 40px;
+      padding: 0 13px 0 40px;
+      color: var(--text);
+      background: #1b1b18;
+      border: 1px solid var(--line);
+      border-radius: 9px;
+      outline: none;
+    }
+    .search:focus { border-color: #777e4e; box-shadow: 0 0 0 3px rgba(215, 243, 106, .08); }
+    .search::placeholder { color: #7f7d73; }
+    .mobile-brand { display: none; }
+
+    .content { max-width: 1440px; margin: auto; padding: 34px 5.2% 72px; }
+    .hero {
+      min-height: 320px;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 17px;
+      background:
+        linear-gradient(90deg, rgba(17,17,15,.98) 0%, rgba(17,17,15,.86) 35%, rgba(17,17,15,.18) 100%),
+        linear-gradient(0deg, rgba(17,17,15,.38), transparent 65%),
+        url("https://image.tmdb.org/t/p/w1280/1pdfLvkbY9ohJlCjQH2CZjjYVvJ.jpg") center 38% / cover,
+        #373529;
+    }
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: 0 0 0 auto;
+      width: 40%;
+      background: linear-gradient(90deg, transparent, rgba(17,17,15,.08));
+      pointer-events: none;
+    }
+    .hero-copy { position: relative; z-index: 1; width: min(510px, 65%); padding: 34px 42px; }
+    .eyebrow { color: var(--accent); font-size: 10px; font-weight: 800; letter-spacing: 1.6px; text-transform: uppercase; }
+    .hero h1 { margin: 13px 0 9px; font-size: clamp(30px, 4vw, 46px); line-height: 1.06; letter-spacing: -1.7px; }
+    .hero-meta { display: flex; align-items: center; gap: 13px; color: #cbc8bd; font-size: 12px; }
+    .rating { color: var(--accent); font-weight: 700; }
+    .hero p { max-width: 440px; margin: 13px 0 20px; color: #c1beb4; font-size: 13px; line-height: 1.65; }
+    .primary-button, .secondary-button {
+      min-height: 39px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 0 15px;
+      border: 0;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 12px;
+      transition: transform .18s, background .18s;
+    }
+    .primary-button { background: var(--accent); color: #191b10; }
+    .primary-button:hover { background: #e4ff83; transform: translateY(-1px); }
+    .secondary-button { background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.14); color: var(--text); }
+    .secondary-button:hover { background: rgba(255,255,255,.17); }
+    .primary-button svg, .secondary-button svg { width: 15px; height: 15px; }
+
+    .section-heading { display: flex; justify-content: space-between; align-items: end; gap: 18px; margin: 35px 0 17px; }
+    .section-heading h2 { margin: 0; font-size: 21px; letter-spacing: -.55px; }
+    .section-heading p { margin: 4px 0 0; color: var(--muted); font-size: 12px; }
+    .results-count { color: var(--muted); font-size: 12px; white-space: nowrap; }
+    .filters { display: flex; gap: 8px; overflow-x: auto; padding: 1px 0 16px; scrollbar-width: none; }
+    .filters::-webkit-scrollbar { display: none; }
+    .filter {
+      flex: none;
+      padding: 7px 12px;
+      border-radius: 20px;
+      border: 1px solid var(--line);
+      color: #aaa79d;
+      background: transparent;
+      font-size: 11px;
+      cursor: pointer;
+    }
+    .filter:hover { color: var(--text); border-color: #55554a; }
+    .filter.active { color: #1c1e12; background: var(--accent); border-color: var(--accent); font-weight: 700; }
+    .movie-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 25px 17px; }
+    .movie-card { min-width: 0; cursor: pointer; }
+    .poster {
+      position: relative;
+      overflow: hidden;
+      aspect-ratio: 2 / 3;
+      background: #292921;
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 10px;
+      isolation: isolate;
+      transition: transform .22s, box-shadow .22s;
+    }
+    .movie-card:hover .poster { transform: translateY(-4px); box-shadow: 0 12px 28px rgba(0,0,0,.32); }
+    .poster img { width: 100%; height: 100%; display: block; object-fit: cover; }
+    .poster::after { content: ""; position: absolute; z-index: 0; inset: 35% 0 0; background: linear-gradient(0deg, rgba(0,0,0,.62), transparent); pointer-events: none; }
+    .poster-score {
+      position: absolute; z-index: 1; top: 9px; left: 9px;
+      display: flex; align-items: center; gap: 4px;
+      padding: 4px 7px; border-radius: 6px;
+      background: rgba(18,18,15,.82); color: var(--accent);
+      font-size: 10px; font-weight: 750; backdrop-filter: blur(7px);
+    }
+    .poster-score svg { width: 11px; height: 11px; }
+    .save-button {
+      position: absolute; z-index: 1; top: 8px; right: 8px;
+      width: 31px; height: 31px; display: grid; place-items: center;
+      border: 1px solid rgba(255,255,255,.16); border-radius: 50%;
+      background: rgba(18,18,15,.72); cursor: pointer; backdrop-filter: blur(7px);
+      transition: color .18s, background .18s, transform .18s;
+    }
+    .save-button:hover { transform: scale(1.08); }
+    .save-button.saved { color: var(--accent); background: #323622; }
+    .save-button svg { width: 15px; height: 15px; }
+    .movie-info { padding: 10px 1px 0; }
+    .movie-title-row { display: flex; align-items: start; justify-content: space-between; gap: 8px; }
+    .movie-info h3 { margin: 0; font-size: 13px; font-weight: 650; line-height: 1.35; }
+    .movie-year { color: var(--muted); font-size: 11px; white-space: nowrap; }
+    .movie-info p { margin: 4px 0 0; color: #88867d; font-size: 11px; }
+    .empty-state { padding: 55px 20px; text-align: center; color: var(--muted); border: 1px dashed #393930; border-radius: 12px; }
+    .empty-state strong { color: var(--text); display: block; margin-bottom: 5px; }
+    .footer-note { padding-top: 37px; text-align: center; color: #6f6d64; font-size: 10px; }
+
+    .modal-backdrop {
+      position: fixed; z-index: 10; inset: 0; display: grid; place-items: center;
+      padding: 20px; background: rgba(0,0,0,.76); backdrop-filter: blur(8px);
+    }
+    .modal {
+      width: min(680px, 100%); max-height: min(780px, 92vh); overflow: auto;
+      position: relative; border: 1px solid rgba(255,255,255,.12);
+      border-radius: 16px; background: #1b1b18; box-shadow: 0 25px 90px rgba(0,0,0,.5);
+    }
+    .modal-art { height: 235px; position: relative; background: #343329; }
+    .modal-art::after { content:""; position:absolute; inset:0; background: linear-gradient(0deg,#1b1b18,transparent 83%); }
+    .modal-art img { width: 100%; height: 100%; object-fit: cover; object-position: center 35%; }
+    .close-modal { position:absolute; z-index:2; right:14px; top:14px; width:34px; height:34px; display:grid; place-items:center; background:rgba(15,15,13,.75); border:1px solid var(--line); border-radius:50%; cursor:pointer; }
+    .close-modal svg { width:17px; height:17px; }
+    .modal-body { position:relative; margin-top:-38px; padding:0 30px 28px; }
+    .modal-body h2 { margin:8px 0 8px; font-size:30px; letter-spacing:-1px; }
+    .modal-meta { display:flex; flex-wrap:wrap; gap:11px; align-items:center; color:var(--muted); font-size:12px; }
+    .modal-description { max-width:580px; color:#c0bdb2; font-size:13px; line-height:1.75; margin:17px 0 18px; }
+    .detail-line { color:var(--muted); font-size:12px; margin:6px 0; }
+    .detail-line strong { color:#e7e4da; font-weight:600; }
+    .modal-actions { display:flex; gap:9px; margin-top:20px; }
+    .toast { position:fixed; z-index:12; left:50%; bottom:26px; transform:translate(-50%, 15px); opacity:0; pointer-events:none; padding:10px 15px; border:1px solid var(--line); border-radius:9px; background:#282820; color:var(--text); box-shadow:0 8px 25px rgba(0,0,0,.3); font-size:12px; transition:opacity .2s, transform .2s; }
+    .toast.visible { opacity:1; transform:translate(-50%, 0); }
+    .hidden { display:none !important; }
+
+    @media (max-width: 1120px) {
+      :root { --sidebar: 205px; }
+      .movie-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+      .hero { min-height: 300px; }
+    }
+    @media (max-width: 760px) {
+      :root { --sidebar: 0px; }
+      .sidebar { display:none; }
+      .main { margin-left:0; }
+      .topbar { height:64px; padding:0 20px; }
+      .mobile-brand { display:flex; align-items:center; gap:8px; font-weight:750; font-size:16px; letter-spacing:-.4px; white-space:nowrap; }
+      .mobile-brand .brand-mark { width:26px; height:26px; border-radius:7px; }
+      .breadcrumb { display:none; }
+      .search-wrap { width:min(250px, 58vw); }
+      .content { padding:22px 20px 55px; }
+      .hero { min-height:285px; background-position: center, center, 58% center; }
+      .hero-copy { width:min(500px, 90%); padding:27px 24px; }
+      .hero p { font-size:12px; }
+      .movie-grid { grid-template-columns:repeat(3,minmax(0,1fr)); gap:20px 12px; }
+      .section-heading { margin-top:29px; }
+      .section-heading h2 { font-size:19px; }
+    }
+    @media (max-width: 470px) {
+      .topbar { gap:10px; padding:0 14px; }
+      .mobile-brand { font-size:14px; gap:6px; }
+      .search-wrap { width: min(190px, 53vw); }
+      .search { height:36px; font-size:12px; padding-left:34px; }
+      .search-wrap svg { left:11px; width:15px; height:15px; }
+      .content { padding:16px 14px 45px; }
+      .hero { min-height:290px; border-radius:13px; background-position:center,center,60% center; }
+      .hero-copy { width:100%; padding:24px 20px; }
+      .hero h1 { font-size:34px; }
+      .hero p { max-width:300px; }
+      .movie-grid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:19px 13px; }
+      .movie-info h3 { font-size:12px; }
+      .modal-body { padding:0 20px 23px; }
+      .modal-body h2 { font-size:25px; }
+      .modal-art { height:190px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior:auto !important; transition-duration:.01ms !important; animation-duration:.01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <a class="brand" href="#" aria-label="Pellicule, accueil">
+        <span class="brand-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="3" width="16" height="18" rx="3"/><path d="M8 3v18M16 3v18M4 8h4m8 0h4M4 16h4m8 0h4"/></svg></span>
+        pellicule
+      </a>
+      <p class="nav-label">Découvrir</p>
+      <nav class="nav" aria-label="Navigation principale">
+        <button class="nav-button active" data-view="discover">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4M11 7v4l3 2"/></svg>
+          Explorer
+        </button>
+        <button class="nav-button" data-view="watchlist">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M6 4.5A1.5 1.5 0 0 1 7.5 3h9A1.5 1.5 0 0 1 18 4.5V21l-6-4-6 4V4.5Z"/></svg>
+          Ma liste <span class="nav-count" id="watchlist-count">0</span>
+        </button>
+      </nav>
+      <div class="sidebar-bottom">
+        <div class="note-card">
+          <strong>Le cinéma, à votre façon.</strong>
+          <p>Des idées de films à découvrir, et une liste à garder sous la main.</p>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div class="mobile-brand"><span class="brand-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="3" width="16" height="18" rx="3"/><path d="M8 3v18M16 3v18M4 8h4m8 0h4M4 16h4m8 0h4"/></svg></span>pellicule</div>
+        <div class="breadcrumb"><strong id="breadcrumb-current">Explorer</strong><span> / </span><span>Films</span></div>
+        <label class="search-wrap">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="10.8" cy="10.8" r="6.8"/><path d="m16 16 4.5 4.5"/></svg>
+          <input class="search" id="search" type="search" placeholder="Rechercher un film..." autocomplete="off" aria-label="Rechercher un film">
+        </label>
+      </header>
+
+      <div class="content">
+        <section class="hero" aria-labelledby="hero-title">
+          <div class="hero-copy">
+            <span class="eyebrow">Le choix de la semaine</span>
+            <h1 id="hero-title">Dune :<br>Deuxième partie</h1>
+            <div class="hero-meta"><span class="rating">★ 8,5</span><span>2024</span><span>2 h 46</span><span>Science-fiction</span></div>
+            <p>Paul Atréides rejoint Chani et les Fremen dans un voyage de vengeance et de destinée, au cœur des sables d'Arrakis.</p>
+            <button class="primary-button" id="hero-details">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 5v14m-7-7h14"/></svg>
+              Découvrir le film
+            </button>
+          </div>
+        </section>
+
+        <section aria-labelledby="section-title">
+          <div class="section-heading">
+            <div>
+              <h2 id="section-title">À découvrir</h2>
+              <p id="section-subtitle">Une sélection pour votre prochaine séance.</p>
+            </div>
+            <span class="results-count" id="results-count"></span>
+          </div>
+          <div class="filters" id="filters" aria-label="Filtrer par genre"></div>
+          <div class="movie-grid" id="movie-grid"></div>
+          <div class="empty-state hidden" id="empty-state"><strong id="empty-title">Aucun film trouvé</strong><span id="empty-message">Essayez un autre titre ou changez de genre.</span></div>
+        </section>
+        <p class="footer-note">Les informations et visuels sont fournis à titre indicatif. Pellicule ne diffuse aucun film.</p>
+      </div>
+    </main>
+  </div>
+
+  <div class="modal-backdrop hidden" id="modal-backdrop" role="presentation">
+    <section class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+      <div class="modal-art"><img id="modal-poster" alt=""></div>
+      <button class="close-modal" id="close-modal" aria-label="Fermer la fiche">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m6 6 12 12M18 6 6 18"/></svg>
+      </button>
+      <div class="modal-body">
+        <span class="eyebrow">Fiche du film</span>
+        <h2 id="modal-title"></h2>
+        <div class="modal-meta" id="modal-meta"></div>
+        <p class="modal-description" id="modal-description"></p>
+        <p class="detail-line"><strong>Réalisation :</strong> <span id="modal-director"></span></p>
+        <p class="detail-line"><strong>Avec :</strong> <span id="modal-cast"></span></p>
+        <div class="modal-actions">
+          <button class="primary-button" id="modal-watchlist"></button>
+          <button class="secondary-button" id="modal-close-secondary">Fermer</button>
+        </div>
+      </div>
+    </section>
+  </div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    const movies = [
+      { id: "dune-2", title: "Dune : Deuxième partie", year: 2024, genre: "Science-fiction", rating: 8.5, duration: "2 h 46", director: "Denis Villeneuve", cast: "Timothée Chalamet, Zendaya, Rebecca Ferguson", description: "Paul Atréides rejoint Chani et les Fremen dans un voyage spirituel et guerrier. Alors qu'il cherche à empêcher un avenir terrible, il doit choisir entre l'amour de sa vie et le destin de l'univers connu.", poster: "1pdfLvkbY9ohJlCjQH2CZjjYVvJ.jpg" },
+      { id: "oppenheimer", title: "Oppenheimer", year: 2023, genre: "Drame", rating: 8.3, duration: "3 h 00", director: "Christopher Nolan", cast: "Cillian Murphy, Emily Blunt, Robert Downey Jr.", description: "Le portrait du physicien J. Robert Oppenheimer et de son rôle dans le développement de la première bombe atomique. Un récit ample sur la science, la responsabilité et les conséquences d'une découverte qui a changé le monde.", poster: "ptpr0kGAckfQkJeJIt8st5dglvd.jpg" },
+      { id: "spider-verse", title: "Spider-Man : Across the Spider-Verse", year: 2023, genre: "Animation", rating: 8.6, duration: "2 h 20", director: "Joaquim Dos Santos", cast: "Shameik Moore, Hailee Steinfeld, Oscar Isaac", description: "Miles Morales retrouve Gwen Stacy et traverse le multivers. Face à une équipe de Spider-Héros, il devra redéfinir ce que signifie être un héros pour protéger ceux qu'il aime.", poster: "8Vt6mWEReuy4Of61Lnj5XjP3G2d.jpg" },
+      { id: "poor-things", title: "Pauvres créatures", year: 2023, genre: "Fantastique", rating: 7.8, duration: "2 h 21", director: "Yórgos Lánthimos", cast: "Emma Stone, Mark Ruffalo, Willem Dafoe", description: "Bella Baxter, ramenée à la vie par un scientifique peu conventionnel, s'élance à la découverte du monde. Une fable visuellement inventive sur la liberté et l'émerveillement.", poster: "kCGlIMHnOm8JPXq3rXM6c5wMxcT.jpg" },
+      { id: "the-batman", title: "The Batman", year: 2022, genre: "Action", rating: 7.8, duration: "2 h 56", director: "Matt Reeves", cast: "Robert Pattinson, Zoë Kravitz, Paul Dano", description: "Dans les rues rongées par la corruption de Gotham, Batman suit les indices laissés par un tueur mystérieux. Cette enquête le rapproche des secrets de sa propre famille et de l'origine de la ville.", poster: "74xTEgt7R36Fpooo50r9T25onhq.jpg" },
+      { id: "interstellar", title: "Interstellar", year: 2014, genre: "Science-fiction", rating: 8.7, duration: "2 h 49", director: "Christopher Nolan", cast: "Matthew McConaughey, Anne Hathaway, Jessica Chastain", description: "Alors que la Terre devient de moins en moins habitable, une équipe d'explorateurs franchit les limites de notre galaxie à la recherche d'un nouveau foyer pour l'humanité.", poster: "gEU2QniE6E77NI6lCU6MxlNBvIx.jpg" },
+      { id: "arrival", title: "Premier contact", year: 2016, genre: "Science-fiction", rating: 7.9, duration: "1 h 56", director: "Denis Villeneuve", cast: "Amy Adams, Jeremy Renner, Forest Whitaker", description: "Quand de mystérieux vaisseaux apparaissent sur Terre, une linguiste est chargée de comprendre les visiteurs. Chaque mot déchiffré rapproche l'humanité d'une révélation inattendue.", poster: "x2FJsf1ElAgr63Y3PNPtJrcmpoe.jpg" },
+      { id: "grand-budapest", title: "The Grand Budapest Hotel", year: 2014, genre: "Comédie", rating: 8.1, duration: "1 h 39", director: "Wes Anderson", cast: "Ralph Fiennes, Tony Revolori, Saoirse Ronan", description: "Dans un hôtel d'Europe centrale, un concierge raffiné et son jeune protégé se retrouvent mêlés à une affaire de tableau volé et à une querelle d'héritage.", poster: "eWdyYQreja6JGCzqHWXpWHDrrPo.jpg" },
+      { id: "barbie", title: "Barbie", year: 2023, genre: "Comédie", rating: 7.0, duration: "1 h 54", director: "Greta Gerwig", cast: "Margot Robbie, Ryan Gosling, America Ferrera", description: "Après une journée qui ne ressemble à aucune autre, Barbie et Ken partent explorer le monde réel. Une aventure pétillante qui joue avec les idées reçues et les rêves d'enfance.", poster: "iuFNMS8U5cb6xfzi51Dbkovj7vM.jpg" },
+      { id: "wonka", title: "Wonka", year: 2023, genre: "Aventure", rating: 7.1, duration: "1 h 56", director: "Paul King", cast: "Timothée Chalamet, Calah Lane, Hugh Grant", description: "Le jeune Willy Wonka arrive en ville avec un grand rêve et quelques recettes extraordinaires. Il lui faudra de l'imagination et de nouveaux amis pour ouvrir sa première boutique.", poster: "qhb1qOilapbapxWQn9jtRCMwXJF.jpg" },
+      { id: "soul", title: "Soul", year: 2020, genre: "Animation", rating: 8.0, duration: "1 h 40", director: "Pete Docter", cast: "Jamie Foxx, Tina Fey, Graham Norton", description: "Un professeur de musique passionné voit sa vie prendre un détour inattendu. Avec une âme pleine de questions, il redécouvre ce qui rend chaque journée précieuse.", poster: "hm58Jw4Lw8OIeECIq5qyPYhAeRJ.jpg" },
+      { id: "everything-everywhere", title: "Everything Everywhere All at Once", year: 2022, genre: "Aventure", rating: 7.8, duration: "2 h 19", director: "Daniel Kwan, Daniel Scheinert", cast: "Michelle Yeoh, Stephanie Hsu, Ke Huy Quan", description: "Une propriétaire de laverie découvre qu'elle seule peut sauver le multivers. Pour y parvenir, elle explore les vies qu'elle aurait pu mener et les possibilités les plus improbables.", poster: "w3LxiVYdWWRvEVdn5RYq6jAAhYS.jpg" }
+    ];
+
+    const posterBase = "https://image.tmdb.org/t/p/w500/";
+    const genres = ["Tous", "Action", "Aventure", "Animation", "Comédie", "Drame", "Fantastique", "Science-fiction"];
+    const icons = {
+      star: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="m12 2.8 2.8 5.7 6.3.9-4.6 4.5 1.1 6.3-5.6-3-5.6 3 1.1-6.3L3 9.4l6.3-.9L12 2.8Z"/></svg>',
+      bookmark: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 4.5A1.5 1.5 0 0 1 7.5 3h9A1.5 1.5 0 0 1 18 4.5V21l-6-4-6 4V4.5Z"/></svg>'
+    };
+    const grid = document.getElementById("movie-grid");
+    const filters = document.getElementById("filters");
+    const searchInput = document.getElementById("search");
+    const backdrop = document.getElementById("modal-backdrop");
+    let activeGenre = "Tous";
+    let currentView = "discover";
+    let selectedMovie = null;
+    let toastTimer;
+    let watchlist = loadWatchlist();
+
+    function loadWatchlist() {
+      try {
+        const saved = JSON.parse(localStorage.getItem("pellicule-watchlist") || "[]");
+        return Array.isArray(saved) ? saved.filter(id => movies.some(movie => movie.id === id)) : [];
+      } catch {
+        showToast("La liste enregistrée n'a pas pu être lue.");
+        return [];
+      }
+    }
+
+    function saveWatchlist() {
+      try {
+        localStorage.setItem("pellicule-watchlist", JSON.stringify(watchlist));
+      } catch {
+        showToast("La liste ne peut pas être enregistrée dans ce navigateur.");
+      }
+      updateWatchlistCount();
+    }
+
+    function updateWatchlistCount() {
+      document.getElementById("watchlist-count").textContent = watchlist.length;
+    }
+
+    function renderFilters() {
+      filters.innerHTML = "";
+      genres.forEach(genre => {
+        const button = document.createElement("button");
+        button.className = `filter${activeGenre === genre ? " active" : ""}`;
+        button.textContent = genre;
+        button.setAttribute("aria-pressed", activeGenre === genre);
+        button.addEventListener("click", () => {
+          activeGenre = genre;
+          renderFilters();
+          renderMovies();
+        });
+        filters.append(button);
+      });
+    }
+
+    function renderMovies() {
+      const query = searchInput.value.trim().toLocaleLowerCase("fr");
+      const visible = movies.filter(movie => {
+        const matchesGenre = activeGenre === "Tous" || movie.genre === activeGenre;
+        const matchesQuery = `${movie.title} ${movie.genre} ${movie.director} ${movie.cast}`.toLocaleLowerCase("fr").includes(query);
+        const matchesView = currentView !== "watchlist" || watchlist.includes(movie.id);
+        return matchesGenre && matchesQuery && matchesView;
+      });
+
+      grid.innerHTML = "";
+      visible.forEach(movie => {
+        const card = document.createElement("article");
+        card.className = "movie-card";
+        card.tabIndex = 0;
+        card.setAttribute("aria-label", `Découvrir ${movie.title}, ${movie.year}`);
+        const isSaved = watchlist.includes(movie.id);
+        card.innerHTML = `
+          <div class="poster">
+            <img src="${posterBase}${movie.poster}" alt="Affiche de ${escapeHTML(movie.title)}" loading="lazy">
+            <span class="poster-score">${icons.star}${movie.rating.toFixed(1).replace(".", ",")}</span>
+            <button class="save-button${isSaved ? " saved" : ""}" aria-label="${isSaved ? "Retirer de" : "Ajouter à"} ma liste" title="${isSaved ? "Retirer de" : "Ajouter à"} ma liste">${icons.bookmark}</button>
+          </div>
+          <div class="movie-info">
+            <div class="movie-title-row"><h3>${escapeHTML(movie.title)}</h3><span class="movie-year">${movie.year}</span></div>
+            <p>${escapeHTML(movie.genre)} · ${movie.duration}</p>
+          </div>`;
+        card.querySelector("img").addEventListener("error", event => { event.currentTarget.style.visibility = "hidden"; });
+        card.querySelector(".save-button").addEventListener("click", event => {
+          event.stopPropagation();
+          toggleWatchlist(movie);
+        });
+        card.addEventListener("click", () => openDetails(movie));
+        card.addEventListener("keydown", event => {
+          if (event.key === "Enter" || event.key === " ") {
+            if (event.target.closest(".save-button")) return;
+            event.preventDefault();
+            openDetails(movie);
+          }
+        });
+        grid.append(card);
+      });
+
+      const empty = document.getElementById("empty-state");
+      empty.classList.toggle("hidden", visible.length !== 0);
+      grid.classList.toggle("hidden", visible.length === 0);
+      document.getElementById("empty-title").textContent = currentView === "watchlist" && !query
+        ? "Votre liste est vide"
+        : "Aucun film trouvé";
+      document.getElementById("empty-message").textContent = currentView === "watchlist" && !query
+        ? "Ajoutez des films avec le bouton marque-page pour les retrouver ici."
+        : "Essayez un autre titre ou changez de genre.";
+      document.getElementById("results-count").textContent = `${visible.length} film${visible.length > 1 ? "s" : ""}`;
+      document.getElementById("section-title").textContent = currentView === "watchlist" ? "Ma liste à voir" : "À découvrir";
+      document.getElementById("section-subtitle").textContent = currentView === "watchlist"
+        ? "Vos films sauvegardés, toujours à portée de main."
+        : "Une sélection pour votre prochaine séance.";
+    }
+
+    function toggleWatchlist(movie) {
+      if (watchlist.includes(movie.id)) {
+        watchlist = watchlist.filter(id => id !== movie.id);
+        showToast(`« ${movie.title} » retiré de votre liste.`);
+      } else {
+        watchlist = [...watchlist, movie.id];
+        showToast(`« ${movie.title} » ajouté à votre liste.`);
+      }
+      saveWatchlist();
+      renderMovies();
+      if (selectedMovie && selectedMovie.id === movie.id) updateModalButton(movie);
+    }
+
+    function openDetails(movie) {
+      selectedMovie = movie;
+      document.getElementById("modal-poster").src = `${posterBase}${movie.poster}`;
+      document.getElementById("modal-poster").alt = `Affiche de ${movie.title}`;
+      document.getElementById("modal-title").textContent = movie.title;
+      document.getElementById("modal-meta").innerHTML =
+        `<span class="rating">★ ${movie.rating.toFixed(1).replace(".", ",")}</span><span>${movie.year}</span><span>${movie.duration}</span><span>${escapeHTML(movie.genre)}</span>`;
+      document.getElementById("modal-description").textContent = movie.description;
+      document.getElementById("modal-director").textContent = movie.director;
+      document.getElementById("modal-cast").textContent = movie.cast;
+      updateModalButton(movie);
+      backdrop.classList.remove("hidden");
+      document.body.style.overflow = "hidden";
+      document.getElementById("close-modal").focus();
+    }
+
+    function updateModalButton(movie) {
+      const button = document.getElementById("modal-watchlist");
+      const saved = watchlist.includes(movie.id);
+      button.innerHTML = `${icons.bookmark}${saved ? "Retirer de ma liste" : "Ajouter à ma liste"}`;
+    }
+
+    function closeDetails() {
+      backdrop.classList.add("hidden");
+      document.body.style.overflow = "";
+      selectedMovie = null;
+    }
+
+    function showToast(message) {
+      const toast = document.getElementById("toast");
+      toast.textContent = message;
+      toast.classList.add("visible");
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toast.classList.remove("visible"), 2400);
+    }
+
+    function setView(view) {
+      currentView = view;
+      activeGenre = "Tous";
+      document.querySelectorAll(".nav-button").forEach(button => button.classList.toggle("active", button.dataset.view === view));
+      document.getElementById("breadcrumb-current").textContent = view === "watchlist" ? "Ma liste" : "Explorer";
+      renderFilters();
+      renderMovies();
+    }
+
+    function escapeHTML(value) {
+      return value.replace(/[&<>"']/g, character => ({
+        "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+      })[character]);
+    }
+
+    document.querySelectorAll(".nav-button").forEach(button => button.addEventListener("click", () => setView(button.dataset.view)));
+    searchInput.addEventListener("input", renderMovies);
+    document.getElementById("hero-details").addEventListener("click", () => openDetails(movies[0]));
+    document.getElementById("close-modal").addEventListener("click", closeDetails);
+    document.getElementById("modal-close-secondary").addEventListener("click", closeDetails);
+    document.getElementById("modal-watchlist").addEventListener("click", () => {
+      if (selectedMovie) toggleWatchlist(selectedMovie);
+    });
+    backdrop.addEventListener("click", event => {
+      if (event.target === backdrop) closeDetails();
+    });
+    document.addEventListener("keydown", event => {
+      if (event.key === "Escape" && !backdrop.classList.contains("hidden")) closeDetails();
+    });
+
+    updateWatchlistCount();
+    renderFilters();
+    renderMovies();
+  </script>
+</body>
+</html>
