@@ -1,0 +1,17 @@
+{
+  "name": "Pellicule",
+  "short_name": "Pellicule",
+  "description": "Catalogue de films en français avec recherche, filtres et liste à voir.",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#11110f",
+  "theme_color": "#11110f",
+  "icons": [
+    {
+      "src": "./favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
