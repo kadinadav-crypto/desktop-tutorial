@@ -280,6 +280,16 @@
     .editorial-title { font-family: Georgia, serif; font-size: clamp(20px, 2.2vw, 29px); line-height: 1.08; font-weight: 700; text-shadow: 0 2px 12px rgba(0,0,0,.4); }
     .editorial-author { font-size: 10px; opacity: .78; }
     .editorial-poster .save-button { font-family: inherit; }
+    .anime-progress { margin:18px 0 0; padding:14px; border:1px solid var(--line); border-radius:10px; background:#22221e; }
+    .anime-progress-heading { display:flex; justify-content:space-between; gap:12px; color:var(--text); font-size:12px; }
+    .anime-progress-heading span { color:var(--muted); text-align:right; }
+    .anime-progress-actions { display:flex; gap:8px; margin-top:11px; }
+    .anime-progress-actions .primary-button { flex:1; }
+    .anime-progress-actions .secondary-button { min-width:40px; }
+    .official-links { display:grid; justify-items:start; gap:8px; margin-top:14px; }
+    .official-links a { text-decoration:none; }
+    .official-links span { color:var(--muted); font-size:10px; }
+    .anime-card-progress { margin-top:5px; color:var(--accent); font-size:10px; }
     .remove-video {
       position: absolute; z-index: 1; top: 8px; right: 46px; width: 31px; height: 31px;
       display: grid; place-items: center; border: 1px solid rgba(255,255,255,.16);
@@ -438,6 +448,10 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="m10 9 5 3-5 3V9ZM7 1l2 3m6-3 2 3"/></svg>
           Séries
         </button>
+        <button class="nav-button" data-view="anime">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="9"/><path d="m9 9 1 1m5-1-1 1M9 15c1.7 1.5 4.3 1.5 6 0"/></svg>
+          Anime
+        </button>
       </nav>
       <p class="nav-label" style="margin-top:24px">Ma collection</p>
       <nav class="nav" aria-label="Ma collection">
@@ -487,6 +501,7 @@
         <button class="mobile-nav-button" data-view="comics">BD</button>
         <button class="mobile-nav-button" data-view="manga">Mangas</button>
         <button class="mobile-nav-button" data-view="series">Séries</button>
+        <button class="mobile-nav-button" data-view="anime">Anime</button>
         <button class="mobile-nav-button" data-view="watchlist">Ma liste</button>
       </nav>
       <input id="video-input" class="hidden" type="file" accept="video/*,.mkv,.avi" multiple>
@@ -509,7 +524,7 @@
           <div class="section-heading">
             <div>
               <h2 id="recommendations-title">Top 10 — les mieux notés</h2>
-              <p id="recommendations-subtitle">Films, séries, BD et mangas — affichés dans toutes les rubriques.</p>
+              <p id="recommendations-subtitle">Films, séries, anime, BD et mangas — affichés dans toutes les rubriques.</p>
             </div>
           </div>
           <div class="recommendation-grid" id="recommendation-grid"></div>
@@ -550,6 +565,17 @@
         <p class="modal-description" id="modal-description"></p>
         <p class="detail-line" id="modal-creator-line"><strong id="modal-creator-label">Réalisation :</strong> <span id="modal-director"></span></p>
         <p class="detail-line" id="modal-cast-line"><strong id="modal-cast-label">Avec :</strong> <span id="modal-cast"></span></p>
+        <div class="anime-progress hidden" id="anime-progress">
+          <div class="anime-progress-heading"><strong>Mon suivi des épisodes</strong><span id="anime-progress-count"></span></div>
+          <div class="anime-progress-actions">
+            <button class="secondary-button" id="episode-minus" aria-label="Retirer un épisode vu">−</button>
+            <button class="primary-button" id="episode-plus">Marquer un épisode vu</button>
+          </div>
+        </div>
+        <div class="official-links hidden" id="official-links">
+          <a class="secondary-button" id="justwatch-link" target="_blank" rel="noopener noreferrer">Chercher où regarder légalement</a>
+          <span>La disponibilité dépend de votre pays et de votre abonnement. Vidéobox ne lit pas les épisodes.</span>
+        </div>
         <div class="modal-actions">
           <button class="primary-button" id="modal-watchlist"></button>
           <button class="secondary-button hidden" id="modal-watched"></button>
@@ -605,7 +631,13 @@
       { id: "series-arcane", title: "Arcane", year: 2021, category: "series", genre: "Fantastique", rating: 9.0, duration: "2 saisons", director: "Christian Linke et Alex Yee", cast: "Hailee Steinfeld, Ella Purnell, Katie Leung", description: "Deux sœurs se retrouvent séparées par le conflit entre Piltover et Zaun, deux cités aux destins liés par une technologie puissante.", art: "#59477e", trending: true },
       { id: "series-severance", title: "Severance", year: 2022, category: "series", genre: "Science-fiction", rating: 8.7, duration: "2 saisons", director: "Dan Erickson", cast: "Adam Scott, Britt Lower, Patricia Arquette", description: "Des employés ont accepté de séparer leurs souvenirs professionnels et personnels. Une énigme s'installe lorsqu'ils commencent à questionner leur travail.", art: "#397b74", trending: true },
       { id: "series-last-of-us", title: "The Last of Us", year: 2023, category: "series", genre: "Drame", rating: 8.6, duration: "2 saisons", director: "Craig Mazin et Neil Druckmann", cast: "Pedro Pascal, Bella Ramsey", description: "Dans un monde bouleversé par une épidémie, Joel et Ellie entreprennent une traversée périlleuse et nouent un lien inattendu.", art: "#766446", trending: true },
-      { id: "series-bear", title: "The Bear", year: 2022, category: "series", genre: "Drame", rating: 8.5, duration: "4 saisons", director: "Christopher Storer", cast: "Jeremy Allen White, Ayo Edebiri, Ebon Moss-Bachrach", description: "Un jeune chef revient à Chicago pour reprendre le restaurant familial. Entre service intense et nouvelle équipe, il tente de transformer l'établissement sans perdre ses proches.", art: "#a14f39", trending: false }
+      { id: "series-bear", title: "The Bear", year: 2022, category: "series", genre: "Drame", rating: 8.5, duration: "4 saisons", director: "Christopher Storer", cast: "Jeremy Allen White, Ayo Edebiri, Ebon Moss-Bachrach", description: "Un jeune chef revient à Chicago pour reprendre le restaurant familial. Entre service intense et nouvelle équipe, il tente de transformer l'établissement sans perdre ses proches.", art: "#a14f39", trending: false },
+      { id: "anime-frieren", title: "Frieren", year: 2023, category: "anime", genre: "Fantastique", rating: 9.3, duration: "28 épisodes", episodes: 28, director: "Madhouse · d'après le manga de Kanehito Yamada et Tsukasa Abe", cast: "Atsumi Tanezaki, Kana Ichinose, Chiaki Kobayashi", description: "Après la grande aventure, l'elfe Frieren découvre le temps qui passe et entreprend un nouveau voyage pour mieux comprendre les humains qu'elle a connus.", art: "#638267", trending: true },
+      { id: "anime-fullmetal", title: "Fullmetal Alchemist: Brotherhood", year: 2009, category: "anime", genre: "Aventure", rating: 9.1, duration: "64 épisodes", episodes: 64, director: "Yasuhiro Irie · studio Bones", cast: "Romi Park, Rie Kugimiya, Shinichiro Miki", description: "Les frères Edward et Alphonse Elric parcourent leur monde à la recherche de la pierre philosophale pour réparer les conséquences d'une transmutation interdite.", art: "#a8663d", trending: true },
+      { id: "anime-attack-on-titan", title: "L'Attaque des Titans", year: 2013, category: "anime", genre: "Action", rating: 9.0, duration: "89 épisodes", episodes: 89, director: "Tetsurō Araki · Wit Studio / MAPPA", cast: "Yuki Kaji, Yui Ishikawa, Marina Inoue", description: "Après la destruction de leur ville, Eren, Mikasa et Armin rejoignent le combat contre les Titans et découvrent peu à peu les secrets de leur monde.", art: "#785148", trending: true },
+      { id: "anime-violet-evergarden", title: "Violet Evergarden", year: 2018, category: "anime", genre: "Drame", rating: 8.5, duration: "13 épisodes", episodes: 13, director: "Taichi Ishidate · Kyoto Animation", cast: "Yui Ishikawa, Takehito Koyasu", description: "Après la guerre, Violet apprend le métier de prête-plume et découvre, à travers les lettres de ses clients, le sens des émotions et des mots.", art: "#716a95", trending: false },
+      { id: "anime-haikyuu", title: "Haikyu!!", year: 2014, category: "anime", genre: "Comédie", rating: 8.7, duration: "85 épisodes", episodes: 85, director: "Susumu Mitsunaka · Production I.G", cast: "Ayumu Murase, Kaito Ishikawa, Yūki Kaji", description: "Shoyo Hinata rejoint l'équipe de volley de son lycée et forme un duo inattendu avec son ancien rival pour viser les sommets du championnat.", art: "#b76c3d", trending: false },
+      { id: "anime-spy-family", title: "Spy x Family", year: 2022, category: "anime", genre: "Action", rating: 8.3, duration: "37 épisodes", episodes: 37, director: "Kazuhiro Furuhashi · Wit Studio / CloverWorks", cast: "Takuya Eguchi, Atsumi Tanezaki, Saori Hayami", description: "Pour une mission secrète, l'espion Twilight fonde une famille de couverture sans savoir que sa fille adoptive est télépathe et que sa femme est une tueuse à gages.", art: "#bb824b", trending: true }
     ];
     const allCatalogItems = [
       ...catalogMovies.map(movie => ({ ...movie, category: "films" })),
@@ -613,7 +645,8 @@
     ];
     const trendingIds = new Set([
       "dune-2", "poor-things", "bd-asterix", "bd-blacksad", "manga-one-piece",
-      "manga-frieren", "manga-jujutsu", "series-arcane", "series-severance", "series-last-of-us"
+      "manga-frieren", "manga-jujutsu", "series-arcane", "series-severance", "series-last-of-us",
+      "anime-frieren", "anime-fullmetal", "anime-attack-on-titan", "anime-haikyuu"
     ]);
 
     const posterBase = "https://image.tmdb.org/t/p/w500/";
@@ -623,6 +656,7 @@
       comics: ["Tous", "Aventure", "Drame", "Policier"],
       manga: ["Tous", "Action", "Aventure", "Comédie", "Fantastique"],
       series: ["Tous", "Drame", "Fantastique", "Science-fiction"],
+      anime: ["Tous", "Action", "Aventure", "Comédie", "Drame", "Fantastique"],
       watchlist: ["Tous", "Action", "Aventure", "Animation", "Comédie", "Drame", "Fantastique", "Science-fiction", "Policier"],
       library: ["Tous", "Mes vidéos"]
     };
@@ -653,7 +687,7 @@
     }
 
     function createDefaultProfile(watchlist = []) {
-      return { id: "profile-default", name: "Mon profil", watchlist, watched: [] };
+      return { id: "profile-default", name: "Mon profil", watchlist, watched: [], animeProgress: {} };
     }
 
     function loadProfiles() {
@@ -668,7 +702,12 @@
               id: profile.id,
               name: profile.name.slice(0, 32),
               watchlist: Array.isArray(profile.watchlist) ? profile.watchlist.filter(id => typeof id === "string") : [],
-              watched: Array.isArray(profile.watched) ? profile.watched.filter(id => typeof id === "string") : []
+              watched: Array.isArray(profile.watched) ? profile.watched.filter(id => typeof id === "string") : [],
+              animeProgress: profile.animeProgress && typeof profile.animeProgress === "object" && !Array.isArray(profile.animeProgress)
+                ? Object.fromEntries(Object.entries(profile.animeProgress)
+                  .filter(([id, count]) => typeof id === "string" && Number.isInteger(count) && count >= 0)
+                  .map(([id, count]) => [id, count]))
+                : {}
             }));
             if (validProfiles.length) return validProfiles;
           }
@@ -832,15 +871,17 @@
         ? `<div class="poster local-poster">${icons.play}<span>Vidéo personnelle</span><button class="save-button${isSaved ? " saved" : ""}" aria-label="${isSaved ? "Retirer de" : "Ajouter à"} ma liste" title="${isSaved ? "Retirer de" : "Ajouter à"} ma liste">${icons.bookmark}</button><button class="remove-video" aria-label="Supprimer ${escapeHTML(movie.title)}" title="Supprimer de ma médiathèque">${icons.trash}</button></div>`
         : movie.category === "films"
           ? `<div class="poster"><img src="${posterBase}${movie.poster}" alt="Affiche de ${escapeHTML(movie.title)}" loading="lazy"><span class="poster-score">${icons.star}${movie.rating.toFixed(1).replace(".", ",")}</span><button class="save-button${isSaved ? " saved" : ""}" aria-label="${isSaved ? "Retirer de" : "Ajouter à"} ma liste" title="${isSaved ? "Retirer de" : "Ajouter à"} ma liste">${icons.bookmark}</button></div>`
-          : `<div class="poster editorial-poster" style="--art-color:${movie.art}"><span class="editorial-type">${movie.category === "comics" ? "Bande dessinée" : movie.category === "manga" ? "Manga" : "Série"}</span><span class="editorial-title">${escapeHTML(movie.title)}</span><span class="editorial-author">${escapeHTML(movie.director)}</span><span class="poster-score">${icons.star}${movie.rating.toFixed(1).replace(".", ",")}</span><button class="save-button${isSaved ? " saved" : ""}" aria-label="${isSaved ? "Retirer de" : "Ajouter à"} ma liste" title="${isSaved ? "Retirer de" : "Ajouter à"} ma liste">${icons.bookmark}</button></div>`;
+          : `<div class="poster editorial-poster" style="--art-color:${movie.art}"><span class="editorial-type">${movie.category === "comics" ? "Bande dessinée" : movie.category === "manga" ? "Manga" : movie.category === "anime" ? "Anime" : "Série"}</span><span class="editorial-title">${escapeHTML(movie.title)}</span><span class="editorial-author">${escapeHTML(movie.director)}</span><span class="poster-score">${icons.star}${movie.rating.toFixed(1).replace(".", ",")}</span><button class="save-button${isSaved ? " saved" : ""}" aria-label="${isSaved ? "Retirer de" : "Ajouter à"} ma liste" title="${isSaved ? "Retirer de" : "Ajouter à"} ma liste">${icons.bookmark}</button></div>`;
       card.innerHTML = `
         ${poster}
         <div class="movie-info">
           <div class="movie-title-row"><h3>${escapeHTML(movie.title)}</h3><span class="movie-year">${movie.localVideo ? "" : movie.year}</span></div>
-          <p>${escapeHTML(movie.localVideo ? "Votre vidéo" : movie.category === "comics" ? "Bande dessinée" : movie.category === "manga" ? "Manga" : movie.category === "series" ? "Série" : movie.genre)}${movie.localVideo ? "" : ` · ${movie.duration}`}</p>
+          <p>${escapeHTML(movie.localVideo ? "Votre vidéo" : movie.category === "comics" ? "Bande dessinée" : movie.category === "manga" ? "Manga" : movie.category === "anime" ? "Anime" : movie.category === "series" ? "Série" : movie.genre)}${movie.localVideo ? "" : ` · ${movie.duration}`}</p>
+          ${movie.category === "anime" ? `<p class="anime-card-progress" data-anime-progress="${movie.id}"></p>` : ""}
         </div>`;
       const image = card.querySelector("img");
       if (image) image.addEventListener("error", event => { event.currentTarget.style.visibility = "hidden"; });
+      if (movie.category === "anime") updateAnimeCardProgress(card, movie);
       card.querySelector(".save-button").addEventListener("click", event => {
         event.stopPropagation();
         toggleWatchlist(movie);
@@ -858,6 +899,17 @@
         }
       });
       return card;
+    }
+
+    function getAnimeEpisodeProgress(movie) {
+      return Math.min(movie.episodes, getActiveProfile().animeProgress[movie.id] || 0);
+    }
+
+    function updateAnimeCardProgress(card, movie) {
+      const progress = card.querySelector("[data-anime-progress]");
+      if (!progress) return;
+      const watched = getAnimeEpisodeProgress(movie);
+      progress.textContent = `${watched} / ${movie.episodes} épisodes vus`;
     }
 
     function renderCardList(items, target) {
@@ -886,7 +938,8 @@
               : currentView === "comics" ? movie.category === "comics"
                 : currentView === "manga" ? movie.category === "manga"
                   : currentView === "series" ? movie.category === "series"
-                    : movie.category === "films";
+                    : currentView === "anime" ? movie.category === "anime"
+                      : movie.category === "films";
         return matchesGenre && matchesQuery && matchesView;
       });
       renderCardList(visible, grid);
@@ -900,6 +953,7 @@
         comics: ["Bandes dessinées", "Histoires et univers en albums et romans graphiques."],
         manga: ["Mangas", "À la découverte des mangas et de leurs univers."],
         series: ["Séries", "Des séries à ajouter à votre liste."],
+        anime: ["Anime", "Fiches, favoris et suivi de vos épisodes."],
         watchlist: ["Ma liste à voir", "Vos favoris, tous genres confondus."],
         library: ["Mes vidéos", "Lecture et téléchargement de vos propres fichiers vidéo."]
       };
@@ -919,6 +973,9 @@
         emptyMessage = "Essayez un autre genre ou revenez plus tard.";
       } else if (currentView === "series" && !query) {
         emptyTitle = "Aucune série trouvée";
+        emptyMessage = "Essayez un autre genre ou revenez plus tard.";
+      } else if (currentView === "anime" && !query) {
+        emptyTitle = "Aucun anime trouvé";
         emptyMessage = "Essayez un autre genre ou revenez plus tard.";
       }
       document.getElementById("empty-title").textContent = emptyTitle;
@@ -970,7 +1027,7 @@
       } else if (movie.category !== "films") {
         poster.removeAttribute("src");
         editorialCover.style.setProperty("--art-color", movie.art);
-        editorialCover.innerHTML = `<span>${movie.category === "comics" ? "Bande dessinée" : movie.category === "manga" ? "Manga" : "Série"}</span><strong>${escapeHTML(movie.title)}</strong><span>${escapeHTML(movie.director)}</span>`;
+        editorialCover.innerHTML = `<span>${movie.category === "comics" ? "Bande dessinée" : movie.category === "manga" ? "Manga" : movie.category === "anime" ? "Anime" : "Série"}</span><strong>${escapeHTML(movie.title)}</strong><span>${escapeHTML(movie.director)}</span>`;
       } else {
         poster.src = `${posterBase}${movie.poster}`;
         poster.alt = `Affiche de ${movie.title}`;
@@ -983,12 +1040,21 @@
       document.getElementById("modal-director").textContent = movie.director;
       document.getElementById("modal-cast").textContent = movie.localVideo ? "—" : movie.cast;
       document.getElementById("modal-creator-label").textContent = movie.category === "comics" || movie.category === "manga"
-        ? "Auteur·rice(s) :" : movie.localVideo ? "Origine :" : "Réalisation :";
+        ? "Auteur·rice(s) :" : movie.category === "anime" ? "Studio / équipe :" : movie.localVideo ? "Origine :" : "Réalisation :";
       document.getElementById("modal-cast-label").textContent = movie.category === "series" ? "Distribution :" : "Avec :";
       document.getElementById("modal-cast-line").classList.toggle("hidden", !movie.cast);
-      document.getElementById("modal-watched").classList.toggle("hidden", movie.localVideo === true);
+      document.getElementById("modal-watched").classList.toggle("hidden", movie.localVideo === true || movie.category === "anime");
       document.getElementById("modal-download").classList.toggle("hidden", movie.localVideo !== true);
       document.getElementById("modal-delete-video").classList.toggle("hidden", movie.localVideo !== true);
+      document.getElementById("anime-progress").classList.toggle("hidden", movie.category !== "anime");
+      document.getElementById("official-links").classList.toggle("hidden", movie.category !== "anime");
+      if (movie.category === "anime") {
+        const searchUrl = `https://www.justwatch.com/fr/recherche?q=${encodeURIComponent(movie.title)}`;
+        const providerLink = document.getElementById("justwatch-link");
+        providerLink.href = searchUrl;
+        providerLink.setAttribute("aria-label", `Rechercher où regarder ${movie.title} légalement`);
+        updateAnimeProgressPanel(movie);
+      }
       updateModalButtons(movie);
       backdrop.classList.remove("hidden");
       document.body.style.overflow = "hidden";
@@ -1015,6 +1081,28 @@
       const watchedButton = document.getElementById("modal-watched");
       const watched = getActiveProfile().watched.includes(movie.id);
       watchedButton.textContent = watched ? "Déjà vu ✓" : "Marquer comme vu";
+    }
+
+    function updateAnimeProgressPanel(movie) {
+      const watched = getAnimeEpisodeProgress(movie);
+      document.getElementById("anime-progress-count").textContent =
+        `${watched} / ${movie.episodes} épisode${movie.episodes > 1 ? "s" : ""}`;
+      const nextEpisode = document.getElementById("episode-plus");
+      nextEpisode.textContent = watched >= movie.episodes ? "Série terminée ✓" : `Marquer l’épisode ${watched + 1} comme vu`;
+      nextEpisode.disabled = watched >= movie.episodes;
+      document.getElementById("episode-minus").disabled = watched <= 0;
+    }
+
+    function changeAnimeProgress(amount) {
+      if (!selectedMovie || selectedMovie.category !== "anime") return;
+      const profile = getActiveProfile();
+      const current = getAnimeEpisodeProgress(selectedMovie);
+      const next = Math.max(0, Math.min(selectedMovie.episodes, current + amount));
+      profile.animeProgress[selectedMovie.id] = next;
+      saveProfiles();
+      updateAnimeProgressPanel(selectedMovie);
+      renderMovies();
+      showToast(next === current ? "La progression ne peut pas être modifiée davantage." : `Progression enregistrée : ${next}/${selectedMovie.episodes} épisodes.`);
     }
 
     function closeDetails() {
@@ -1143,6 +1231,8 @@
     document.getElementById("modal-watched").addEventListener("click", () => {
       if (selectedMovie && !selectedMovie.localVideo) toggleWatched(selectedMovie);
     });
+    document.getElementById("episode-minus").addEventListener("click", () => changeAnimeProgress(-1));
+    document.getElementById("episode-plus").addEventListener("click", () => changeAnimeProgress(1));
     document.getElementById("modal-download").addEventListener("click", downloadPersonalVideo);
     document.getElementById("modal-delete-video").addEventListener("click", () => {
       if (selectedMovie && selectedMovie.localVideo) removePersonalVideo(selectedMovie);
@@ -1167,7 +1257,8 @@
         id: `profile-${crypto.randomUUID ? crypto.randomUUID() : Date.now()}`,
         name,
         watchlist: [],
-        watched: []
+        watched: [],
+        animeProgress: {}
       };
       profiles.push(profile);
       input.value = "";
@@ -1197,7 +1288,7 @@
     function viewDetailsForNavigation(view) {
       return {
         discover: "Films", trending: "Tendances", comics: "Bandes dessinées",
-        manga: "Mangas", series: "Séries"
+        manga: "Mangas", series: "Séries", anime: "Anime"
       }[view] || "Explorer";
     }
 

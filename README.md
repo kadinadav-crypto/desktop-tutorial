@@ -6,8 +6,10 @@ Application web de découverte de films, bandes dessinées, mangas et séries, a
 
 - Catalogue de démonstration, recherche, filtres et fiches détaillées.
 - Rubriques Tendances, Bandes dessinées, Mangas et Séries, avec une sélection éditoriale.
+- Catalogue Anime avec recherche, fiches, genres et raccourci de recherche de disponibilité auprès de services légaux.
 - Profils locaux avec listes « À voir » et historique des films vus séparés.
-- Top 10 toujours visible : films, séries, BD et mangas classés selon les notes de démonstration.
+- Suivi des épisodes d'anime vus, conservé par profil dans ce navigateur.
+- Top 10 toujours visible : films, séries, anime, BD et mangas classés selon les notes de démonstration.
 - Import, lecture et téléchargement des fichiers vidéo choisis depuis votre appareil.
 
 ## Utilisation
