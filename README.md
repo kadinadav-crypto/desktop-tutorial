@@ -1,9 +1,37 @@
-# Pellicule
+# Vidéobox
 
-Prototype web de découverte de films en français. Le catalogue propose des idées de films, une recherche, des filtres par genre, des fiches détaillées et une liste « À voir » enregistrée dans le navigateur.
+Application web de découverte de films, bandes dessinées, mangas et séries, avec une médiathèque personnelle.
+
+## Fonctions
+
+- Catalogue de démonstration, recherche, filtres et fiches détaillées.
+- Rubriques Tendances, Bandes dessinées, Mangas et Séries, avec une sélection éditoriale.
+- Profils locaux avec listes « À voir » et historique des films vus séparés.
+- Top 10 toujours visible : films, séries, BD et mangas classés selon les notes de démonstration.
+- Import, lecture et téléchargement des fichiers vidéo choisis depuis votre appareil.
 
 ## Utilisation
 
-Ouvrir `index.html` dans un navigateur. Aucun serveur ni installation de dépendances n'est nécessaire. Une connexion Internet est requise pour charger les affiches distantes ; les interactions et la liste à voir restent locales au navigateur.
+Ouvrir `index.html` dans un navigateur récent. Aucune installation ni serveur n'est nécessaire. Une connexion Internet est requise pour les affiches du catalogue. Les profils et listes sont conservés dans le stockage local du navigateur ; les vidéos importées sont stockées dans IndexedDB sur cet appareil et peuvent utiliser beaucoup d'espace. Pour synchroniser des comptes entre appareils, il faudrait ajouter un service serveur avec authentification.
 
-Pellicule ne diffuse aucun film. Les affiches sont chargées depuis TMDB à titre illustratif.
+Les profils ne sont pas des comptes sécurisés et ne sont pas synchronisés. Les tendances et notes du Top 10 sont des exemples de démonstration, pas des classements mis à jour en temps réel. Seuls les fichiers ajoutés par l'utilisateur sont lus ou téléchargés ; ajoutez uniquement des vidéos que vous possédez ou êtes autorisé à utiliser. Le catalogue n'intègre aucune lecture ni aucun téléchargement de films, séries ou autres contenus tiers.
+
+## Installation depuis un site
+
+Vidéobox est préparée comme une application web installable (PWA). Une fois publiée sur une adresse HTTPS, utilisez le bouton « Installer » ou le menu du navigateur (« Installer l'application » / « Ajouter à l'écran d'accueil »). Le service worker met en cache la page pour permettre de la rouvrir hors connexion ; les affiches externes et les fonctions qui nécessitent Internet peuvent rester indisponibles.
+
+L'ouverture directe du fichier `index.html` ne permet pas l'installation : le site doit d'abord être hébergé en HTTPS. GitHub Pages peut servir de site de téléchargement/installation web, mais ne publie pas automatiquement l'application dans les boutiques. Google Play, l'App Store et les autres boutiques sont des soumissions distinctes : elles demandent un emballage adapté à chaque plateforme, les comptes développeur correspondants, et l'approbation de chaque boutique. Il n'existe pas de publication automatique sur « tous » les sites ou canaux.
+
+## Publication GitHub Pages
+
+Le workflow `.github/workflows/pages.yml` publie automatiquement le site lors d'un push sur les branches `application` ou `main`.
+
+1. Dans GitHub Desktop, enregistrez les changements avec un commit, puis cliquez sur « Push origin » pour envoyer la branche `application` sur GitHub.
+2. Sur GitHub, ouvrez le dépôt, puis **Settings → Pages**.
+3. Dans **Build and deployment**, choisissez **GitHub Actions** comme source.
+4. Ouvrez l'onglet **Actions** et attendez la réussite de « Publish Vidéobox ».
+5. Revenez dans **Settings → Pages** pour ouvrir l'adresse HTTPS publiée. Vous pourrez alors utiliser « Installer » dans Vidéobox ou le menu de votre navigateur.
+
+Si vous utilisez une autre branche, choisissez **Actions → Publish Vidéobox → Run workflow** sur cette branche, ou ajoutez son nom à la liste `branches` du workflow. Le dépôt doit autoriser GitHub Actions à déployer les Pages.
+
+Le site est prêt pour une publication statique. Les affiches du catalogue sont chargées depuis TMDB à titre illustratif.

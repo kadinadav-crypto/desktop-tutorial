@@ -4,7 +4,22 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#11110f">
-  <title>Pellicule — Le cinéma, à votre façon</title>
+  <meta name="application-name" content="Vidéobox">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Vidéobox">
+  <meta name="description" content="Vidéobox : découvrez films, BD, mangas et séries, gérez vos favoris et profitez de recommandations personnalisées.">
+  <meta name="robots" content="index,follow">
+  <meta property="og:title" content="Vidéobox — Le cinéma, à votre façon">
+  <meta property="og:description" content="Films, bandes dessinées, mangas et séries : catalogue, tendances de démonstration, favoris et recommandations.">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="fr_FR">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Vidéobox — Le cinéma, à votre façon">
+  <meta name="twitter:description" content="Films, BD, mangas et séries : catalogue, tendances de démonstration, favoris et recommandations.">
+  <link rel="icon" type="image/svg+xml" href="./favicon.svg">
+  <link rel="apple-touch-icon" href="./icon-192.png">
+  <link rel="manifest" href="./site.webmanifest">
+  <title>Vidéobox — Le cinéma, à votre façon</title>
   <style>
     :root {
       color-scheme: dark;
@@ -69,7 +84,7 @@
       text-transform: uppercase;
       margin: 0 0 12px 12px;
     }
-    .nav { display: grid; gap: 5px; }
+    .nav { display: grid; gap: 5px; overflow-y: auto; }
     .nav-button {
       width: 100%;
       display: flex;
@@ -133,6 +148,16 @@
     .search:focus { border-color: #777e4e; box-shadow: 0 0 0 3px rgba(215, 243, 106, .08); }
     .search::placeholder { color: #7f7d73; }
     .mobile-brand { display: none; }
+    .top-actions { display: flex; align-items: center; justify-content: flex-end; gap: 9px; }
+    .top-action {
+      min-height: 38px; display: inline-flex; align-items: center; justify-content: center; gap: 7px;
+      padding: 0 11px; border: 1px solid var(--line); border-radius: 9px; background: #1b1b18;
+      color: #d7d4ca; font-size: 11px; font-weight: 650; white-space: nowrap; cursor: pointer;
+    }
+    .top-action:hover { border-color: #55554a; color: var(--text); }
+    .top-action svg { width: 15px; height: 15px; }
+    .install-action { color: var(--accent); }
+    .mobile-nav { display: none; }
 
     .content { max-width: 1440px; margin: auto; padding: 34px 5.2% 72px; }
     .hero {
@@ -239,6 +264,33 @@
     .movie-info h3 { margin: 0; font-size: 13px; font-weight: 650; line-height: 1.35; }
     .movie-year { color: var(--muted); font-size: 11px; white-space: nowrap; }
     .movie-info p { margin: 4px 0 0; color: #88867d; font-size: 11px; }
+    .poster.local-poster {
+      display: grid; place-content: center; gap: 10px; text-align: center;
+      color: #d7f36a; background: radial-gradient(ellipse at 50% 35%, #454733, #25251e 75%);
+      font-size: 11px; font-weight: 650;
+    }
+    .local-poster svg { width: 34px; height: 34px; margin: auto; }
+    .poster.editorial-poster {
+      display: grid; place-content: center; gap: 12px; padding: 18px;
+      text-align: center; color: #fff; background:
+        radial-gradient(ellipse at 70% 22%, rgba(255,255,255,.2), transparent 35%),
+        linear-gradient(145deg, var(--art-color), #171713 88%);
+    }
+    .editorial-type { font-size: 9px; font-weight: 800; letter-spacing: 1.8px; text-transform: uppercase; opacity: .8; }
+    .editorial-title { font-family: Georgia, serif; font-size: clamp(20px, 2.2vw, 29px); line-height: 1.08; font-weight: 700; text-shadow: 0 2px 12px rgba(0,0,0,.4); }
+    .editorial-author { font-size: 10px; opacity: .78; }
+    .editorial-poster .save-button { font-family: inherit; }
+    .remove-video {
+      position: absolute; z-index: 1; top: 8px; right: 46px; width: 31px; height: 31px;
+      display: grid; place-items: center; border: 1px solid rgba(255,255,255,.16);
+      border-radius: 50%; background: rgba(18,18,15,.72); cursor: pointer;
+    }
+    .remove-video:hover { color: #ff9a8b; }
+    .remove-video svg { width: 15px; height: 15px; }
+    .recommendations { margin: 28px 0 0; }
+    .recommendations .section-heading { margin-top: 0; }
+    .recommendation-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 17px; }
+    .curation-note { margin: 25px 0 -18px; color: var(--muted); font-size: 11px; }
     .empty-state { padding: 55px 20px; text-align: center; color: var(--muted); border: 1px dashed #393930; border-radius: 12px; }
     .empty-state strong { color: var(--text); display: block; margin-bottom: 5px; }
     .footer-note { padding-top: 37px; text-align: center; color: #6f6d64; font-size: 10px; }
@@ -252,9 +304,16 @@
       position: relative; border: 1px solid rgba(255,255,255,.12);
       border-radius: 16px; background: #1b1b18; box-shadow: 0 25px 90px rgba(0,0,0,.5);
     }
-    .modal-art { height: 235px; position: relative; background: #343329; }
+    .modal-art { height: 235px; position: relative; overflow: hidden; background: #343329; }
     .modal-art::after { content:""; position:absolute; inset:0; background: linear-gradient(0deg,#1b1b18,transparent 83%); }
     .modal-art img { width: 100%; height: 100%; object-fit: cover; object-position: center 35%; }
+    .modal-art video { position: relative; z-index: 1; width: 100%; height: 100%; object-fit: contain; background: #080808; }
+    .editorial-modal-cover {
+      width:100%; height:100%; display:grid; place-content:center; gap:9px; padding:24px;
+      text-align:center; background:radial-gradient(ellipse at 70% 22%, rgba(255,255,255,.2), transparent 35%), linear-gradient(145deg,var(--art-color),#171713 88%);
+    }
+    .editorial-modal-cover strong { max-width:500px; font:700 clamp(26px,5vw,43px)/1.08 Georgia,serif; }
+    .editorial-modal-cover span { font-size:11px; opacity:.8; }
     .close-modal { position:absolute; z-index:2; right:14px; top:14px; width:34px; height:34px; display:grid; place-items:center; background:rgba(15,15,13,.75); border:1px solid var(--line); border-radius:50%; cursor:pointer; }
     .close-modal svg { width:17px; height:17px; }
     .modal-body { position:relative; margin-top:-38px; padding:0 30px 28px; }
@@ -263,7 +322,25 @@
     .modal-description { max-width:580px; color:#c0bdb2; font-size:13px; line-height:1.75; margin:17px 0 18px; }
     .detail-line { color:var(--muted); font-size:12px; margin:6px 0; }
     .detail-line strong { color:#e7e4da; font-weight:600; }
-    .modal-actions { display:flex; gap:9px; margin-top:20px; }
+    .modal-actions { display:flex; flex-wrap:wrap; gap:9px; margin-top:20px; }
+    .profile-list { display:grid; gap:8px; margin:16px 0 20px; }
+    .profile-choice {
+      width:100%; display:flex; align-items:center; gap:10px; padding:11px 12px;
+      border:1px solid var(--line); border-radius:9px; background:#22221e; text-align:left; cursor:pointer;
+    }
+    .profile-choice:hover, .profile-choice.active { border-color:#737a4b; }
+    .profile-avatar {
+      width:30px; height:30px; display:grid; place-items:center; border-radius:50%;
+      background:#353827; color:var(--accent); font-weight:750;
+    }
+    .profile-choice small { margin-left:auto; color:var(--muted); }
+    .profile-form { display:flex; gap:8px; padding-top:14px; border-top:1px solid var(--line); }
+    .profile-form input {
+      min-width:0; flex:1; padding:0 11px; color:var(--text); background:#11110f;
+      border:1px solid var(--line); border-radius:8px; outline:none;
+    }
+    .profile-form input:focus { border-color:#777e4e; }
+    .profile-note { color:var(--muted); font-size:11px; margin:13px 0 0; }
     .toast { position:fixed; z-index:12; left:50%; bottom:26px; transform:translate(-50%, 15px); opacity:0; pointer-events:none; padding:10px 15px; border:1px solid var(--line); border-radius:9px; background:#282820; color:var(--text); box-shadow:0 8px 25px rgba(0,0,0,.3); font-size:12px; transition:opacity .2s, transform .2s; }
     .toast.visible { opacity:1; transform:translate(-50%, 0); }
     .hidden { display:none !important; }
@@ -281,19 +358,36 @@
       .mobile-brand { display:flex; align-items:center; gap:8px; font-weight:750; font-size:16px; letter-spacing:-.4px; white-space:nowrap; }
       .mobile-brand .brand-mark { width:26px; height:26px; border-radius:7px; }
       .breadcrumb { display:none; }
-      .search-wrap { width:min(250px, 58vw); }
+      .topbar { height:auto; min-height:64px; flex-wrap:wrap; padding:10px 20px; }
+      .top-actions { flex:1; }
+      .search-wrap { flex:1; width:auto; min-width:150px; }
+      .top-action { min-height:36px; }
+      .mobile-nav {
+        display:flex; gap:7px; overflow-x:auto; padding:9px 20px;
+        border-bottom:1px solid var(--line); scrollbar-width:none;
+      }
+      .mobile-nav::-webkit-scrollbar { display:none; }
+      .mobile-nav-button {
+        flex:none; padding:6px 11px; border:1px solid var(--line); border-radius:18px;
+        background:transparent; color:var(--muted); font-size:11px; cursor:pointer;
+      }
+      .mobile-nav-button.active { background:var(--accent); border-color:var(--accent); color:#191b10; font-weight:700; }
       .content { padding:22px 20px 55px; }
       .hero { min-height:285px; background-position: center, center, 58% center; }
       .hero-copy { width:min(500px, 90%); padding:27px 24px; }
       .hero p { font-size:12px; }
       .movie-grid { grid-template-columns:repeat(3,minmax(0,1fr)); gap:20px 12px; }
+      .recommendation-grid { grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; }
       .section-heading { margin-top:29px; }
       .section-heading h2 { font-size:19px; }
     }
     @media (max-width: 470px) {
-      .topbar { gap:10px; padding:0 14px; }
+      .topbar { gap:9px; padding:9px 14px; }
       .mobile-brand { font-size:14px; gap:6px; }
-      .search-wrap { width: min(190px, 53vw); }
+      .top-actions { gap:6px; }
+      .search-wrap { min-width:120px; }
+      .top-action { width:35px; min-height:35px; padding:0; font-size:0; }
+      .top-action svg { width:17px; height:17px; }
       .search { height:36px; font-size:12px; padding-left:34px; }
       .search-wrap svg { left:11px; width:15px; height:15px; }
       .content { padding:16px 14px 45px; }
@@ -302,10 +396,13 @@
       .hero h1 { font-size:34px; }
       .hero p { max-width:300px; }
       .movie-grid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:19px 13px; }
+      .recommendation-grid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:13px; }
       .movie-info h3 { font-size:12px; }
       .modal-body { padding:0 20px 23px; }
       .modal-body h2 { font-size:25px; }
       .modal-art { height:190px; }
+      .profile-form { flex-wrap:wrap; }
+      .profile-form input { min-height:39px; }
     }
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after { scroll-behavior:auto !important; transition-duration:.01ms !important; animation-duration:.01ms !important; }
@@ -315,9 +412,9 @@
 <body>
   <div class="app">
     <aside class="sidebar">
-      <a class="brand" href="#" aria-label="Pellicule, accueil">
+      <a class="brand" href="#" aria-label="Vidéobox, accueil">
         <span class="brand-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="3" width="16" height="18" rx="3"/><path d="M8 3v18M16 3v18M4 8h4m8 0h4M4 16h4m8 0h4"/></svg></span>
-        pellicule
+        vidéobox
       </a>
       <p class="nav-label">Découvrir</p>
       <nav class="nav" aria-label="Navigation principale">
@@ -325,9 +422,32 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4M11 7v4l3 2"/></svg>
           Explorer
         </button>
+        <button class="nav-button" data-view="trending">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 22a7 7 0 0 0 7-7c0-3-2-5-4-7 0 3-1 4-2 4 0-5-3-9-6-11 1 5-2 8-2 13a7 7 0 0 0 7 8Z"/></svg>
+          Tendances
+        </button>
+        <button class="nav-button" data-view="comics">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M3 5.5A2.5 2.5 0 0 1 5.5 3H12v17H5.5A2.5 2.5 0 0 0 3 22V5.5Zm18 0A2.5 2.5 0 0 0 18.5 3H12v17h6.5a2.5 2.5 0 0 1 2.5 2V5.5Z"/></svg>
+          Bandes dessinées
+        </button>
+        <button class="nav-button" data-view="manga">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 4h16v16H4zM8 4v16M8 8h12M8 16h12"/></svg>
+          Mangas
+        </button>
+        <button class="nav-button" data-view="series">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="m10 9 5 3-5 3V9ZM7 1l2 3m6-3 2 3"/></svg>
+          Séries
+        </button>
+      </nav>
+      <p class="nav-label" style="margin-top:24px">Ma collection</p>
+      <nav class="nav" aria-label="Ma collection">
         <button class="nav-button" data-view="watchlist">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M6 4.5A1.5 1.5 0 0 1 7.5 3h9A1.5 1.5 0 0 1 18 4.5V21l-6-4-6 4V4.5Z"/></svg>
           Ma liste <span class="nav-count" id="watchlist-count">0</span>
+        </button>
+        <button class="nav-button" data-view="library">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m10 9 5 3-5 3V9Z"/></svg>
+          Mes vidéos <span class="nav-count" id="library-count">0</span>
         </button>
       </nav>
       <div class="sidebar-bottom">
@@ -340,13 +460,36 @@
 
     <main class="main">
       <header class="topbar">
-        <div class="mobile-brand"><span class="brand-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="3" width="16" height="18" rx="3"/><path d="M8 3v18M16 3v18M4 8h4m8 0h4M4 16h4m8 0h4"/></svg></span>pellicule</div>
+        <div class="mobile-brand"><span class="brand-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="3" width="16" height="18" rx="3"/><path d="M8 3v18M16 3v18M4 8h4m8 0h4M4 16h4m8 0h4"/></svg></span>vidéobox</div>
         <div class="breadcrumb"><strong id="breadcrumb-current">Explorer</strong><span> / </span><span>Films</span></div>
-        <label class="search-wrap">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="10.8" cy="10.8" r="6.8"/><path d="m16 16 4.5 4.5"/></svg>
-          <input class="search" id="search" type="search" placeholder="Rechercher un film..." autocomplete="off" aria-label="Rechercher un film">
-        </label>
+        <div class="top-actions">
+          <label class="search-wrap">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="10.8" cy="10.8" r="6.8"/><path d="m16 16 4.5 4.5"/></svg>
+            <input class="search" id="search" type="search" placeholder="Rechercher un film..." autocomplete="off" aria-label="Rechercher un film">
+          </label>
+          <button class="top-action" id="add-video-button" title="Ajouter une de vos vidéos" aria-label="Ajouter une de vos vidéos">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 5v14m-7-7h14"/></svg>
+            Ajouter une vidéo
+          </button>
+          <button class="top-action install-action" id="install-button" title="Installer Vidéobox sur cet appareil" aria-label="Installer Vidéobox sur cet appareil">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M12 7v7m-3-3 3 3 3-3M9 18h6"/></svg>
+            Installer
+          </button>
+          <button class="top-action" id="profile-button" title="Changer de profil" aria-label="Profil">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="3.5"/><path d="M5 20a7 7 0 0 1 14 0"/></svg>
+            <span id="profile-button-label">Mon profil</span>
+          </button>
+        </div>
       </header>
+      <nav class="mobile-nav" aria-label="Rubriques">
+        <button class="mobile-nav-button active" data-view="discover">Films</button>
+        <button class="mobile-nav-button" data-view="trending">Tendances</button>
+        <button class="mobile-nav-button" data-view="comics">BD</button>
+        <button class="mobile-nav-button" data-view="manga">Mangas</button>
+        <button class="mobile-nav-button" data-view="series">Séries</button>
+        <button class="mobile-nav-button" data-view="watchlist">Ma liste</button>
+      </nav>
+      <input id="video-input" class="hidden" type="file" accept="video/*,.mkv,.avi" multiple>
 
       <div class="content">
         <section class="hero" aria-labelledby="hero-title">
@@ -362,6 +505,17 @@
           </div>
         </section>
 
+        <section class="recommendations" id="recommendations-section" aria-labelledby="recommendations-title">
+          <div class="section-heading">
+            <div>
+              <h2 id="recommendations-title">Top 10 — les mieux notés</h2>
+              <p id="recommendations-subtitle">Films, séries, BD et mangas — affichés dans toutes les rubriques.</p>
+            </div>
+          </div>
+          <div class="recommendation-grid" id="recommendation-grid"></div>
+        </section>
+        <p class="curation-note hidden" id="curation-note">Sélection éditoriale de démonstration — les tendances ne sont pas actualisées en temps réel.</p>
+
         <section aria-labelledby="section-title">
           <div class="section-heading">
             <div>
@@ -374,14 +528,18 @@
           <div class="movie-grid" id="movie-grid"></div>
           <div class="empty-state hidden" id="empty-state"><strong id="empty-title">Aucun film trouvé</strong><span id="empty-message">Essayez un autre titre ou changez de genre.</span></div>
         </section>
-        <p class="footer-note">Les informations et visuels sont fournis à titre indicatif. Pellicule ne diffuse aucun film.</p>
+        <p class="footer-note">Les œuvres et données du catalogue sont des exemples de découverte, sans lecture des contenus. La lecture et le téléchargement sont réservés aux vidéos personnelles que vous ajoutez et êtes autorisé à utiliser.</p>
       </div>
     </main>
   </div>
 
   <div class="modal-backdrop hidden" id="modal-backdrop" role="presentation">
     <section class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
-      <div class="modal-art"><img id="modal-poster" alt=""></div>
+      <div class="modal-art">
+        <img id="modal-poster" alt="">
+        <div id="modal-editorial-cover" class="editorial-modal-cover hidden"></div>
+        <video id="local-video-player" class="hidden" controls playsinline preload="metadata"></video>
+      </div>
       <button class="close-modal" id="close-modal" aria-label="Fermer la fiche">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m6 6 12 12M18 6 6 18"/></svg>
       </button>
@@ -390,19 +548,37 @@
         <h2 id="modal-title"></h2>
         <div class="modal-meta" id="modal-meta"></div>
         <p class="modal-description" id="modal-description"></p>
-        <p class="detail-line"><strong>Réalisation :</strong> <span id="modal-director"></span></p>
-        <p class="detail-line"><strong>Avec :</strong> <span id="modal-cast"></span></p>
+        <p class="detail-line" id="modal-creator-line"><strong id="modal-creator-label">Réalisation :</strong> <span id="modal-director"></span></p>
+        <p class="detail-line" id="modal-cast-line"><strong id="modal-cast-label">Avec :</strong> <span id="modal-cast"></span></p>
         <div class="modal-actions">
           <button class="primary-button" id="modal-watchlist"></button>
+          <button class="secondary-button hidden" id="modal-watched"></button>
+          <button class="secondary-button hidden" id="modal-download">Télécharger ma vidéo</button>
+          <button class="secondary-button hidden" id="modal-delete-video">Supprimer ma vidéo</button>
           <button class="secondary-button" id="modal-close-secondary">Fermer</button>
         </div>
       </div>
     </section>
   </div>
+  <div class="modal-backdrop hidden" id="profile-backdrop" role="presentation">
+    <section class="modal" role="dialog" aria-modal="true" aria-labelledby="profile-title" style="max-width:440px;padding:25px">
+      <button class="close-modal" id="close-profile" aria-label="Fermer les profils">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m6 6 12 12M18 6 6 18"/></svg>
+      </button>
+      <span class="eyebrow">Profils sur cet appareil</span>
+      <h2 id="profile-title" style="margin:8px 0 0">Qui regarde ?</h2>
+      <div class="profile-list" id="profile-list"></div>
+      <form class="profile-form" id="profile-form">
+        <input id="new-profile-name" type="text" maxlength="32" placeholder="Nom du nouveau profil" aria-label="Nom du nouveau profil" required>
+        <button class="primary-button" type="submit">Créer</button>
+      </form>
+      <p class="profile-note">Les profils et préférences sont enregistrés uniquement dans ce navigateur. Ils ne constituent pas des comptes sécurisés et ne sont pas synchronisés.</p>
+    </section>
+  </div>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
   <script>
-    const movies = [
+    const catalogMovies = [
       { id: "dune-2", title: "Dune : Deuxième partie", year: 2024, genre: "Science-fiction", rating: 8.5, duration: "2 h 46", director: "Denis Villeneuve", cast: "Timothée Chalamet, Zendaya, Rebecca Ferguson", description: "Paul Atréides rejoint Chani et les Fremen dans un voyage spirituel et guerrier. Alors qu'il cherche à empêcher un avenir terrible, il doit choisir entre l'amour de sa vie et le destin de l'univers connu.", poster: "1pdfLvkbY9ohJlCjQH2CZjjYVvJ.jpg" },
       { id: "oppenheimer", title: "Oppenheimer", year: 2023, genre: "Drame", rating: 8.3, duration: "3 h 00", director: "Christopher Nolan", cast: "Cillian Murphy, Emily Blunt, Robert Downey Jr.", description: "Le portrait du physicien J. Robert Oppenheimer et de son rôle dans le développement de la première bombe atomique. Un récit ample sur la science, la responsabilité et les conséquences d'une découverte qui a changé le monde.", poster: "ptpr0kGAckfQkJeJIt8st5dglvd.jpg" },
       { id: "spider-verse", title: "Spider-Man : Across the Spider-Verse", year: 2023, genre: "Animation", rating: 8.6, duration: "2 h 20", director: "Joaquim Dos Santos", cast: "Shameik Moore, Hailee Steinfeld, Oscar Isaac", description: "Miles Morales retrouve Gwen Stacy et traverse le multivers. Face à une équipe de Spider-Héros, il devra redéfinir ce que signifie être un héros pour protéger ceux qu'il aime.", poster: "8Vt6mWEReuy4Of61Lnj5XjP3G2d.jpg" },
@@ -417,48 +593,222 @@
       { id: "everything-everywhere", title: "Everything Everywhere All at Once", year: 2022, genre: "Aventure", rating: 7.8, duration: "2 h 19", director: "Daniel Kwan, Daniel Scheinert", cast: "Michelle Yeoh, Stephanie Hsu, Ke Huy Quan", description: "Une propriétaire de laverie découvre qu'elle seule peut sauver le multivers. Pour y parvenir, elle explore les vies qu'elle aurait pu mener et les possibilités les plus improbables.", poster: "w3LxiVYdWWRvEVdn5RYq6jAAhYS.jpg" }
     ];
 
+    const otherCatalogItems = [
+      { id: "bd-asterix", title: "Astérix et le Domaine des dieux", year: 2014, category: "comics", genre: "Aventure", rating: 7.2, duration: "Album", director: "René Goscinny et Albert Uderzo", cast: "", description: "Jules César imagine un nouveau plan pour conquérir le village gaulois : construire une cité romaine à ses portes. Astérix et Obélix devront déjouer cette idée.", art: "#b65b32", trending: true },
+      { id: "bd-tintin", title: "Le Secret de la Licorne", year: 1943, category: "comics", genre: "Aventure", rating: 7.8, duration: "Album", director: "Hergé", cast: "", description: "L'achat d'une maquette de bateau entraîne Tintin et le capitaine Haddock dans une enquête autour d'un secret de famille et d'un trésor disparu.", art: "#426a75", trending: false },
+      { id: "bd-blacksad", title: "Blacksad : Quelque part entre les ombres", year: 2000, category: "comics", genre: "Policier", rating: 8.0, duration: "Album", director: "Juan Díaz Canales et Juanjo Guarnido", cast: "", description: "Dans un polar au style noir, le détective John Blacksad enquête sur le meurtre d'une ancienne connaissance dans une ville peuplée d'animaux anthropomorphes.", art: "#5c3a42", trending: true },
+      { id: "bd-persepolis", title: "Persepolis", year: 2000, category: "comics", genre: "Drame", rating: 8.1, duration: "Roman graphique", director: "Marjane Satrapi", cast: "", description: "À travers le regard d'une jeune fille, ce récit autobiographique suit une enfance et une adolescence traversées par les bouleversements de l'Iran.", art: "#554d70", trending: false },
+      { id: "manga-one-piece", title: "One Piece", year: 1997, category: "manga", genre: "Aventure", rating: 8.7, duration: "Manga · en cours", director: "Eiichiro Oda", cast: "", description: "Monkey D. Luffy prend la mer avec son équipage pour trouver le légendaire trésor One Piece et devenir le roi des pirates.", art: "#247b82", trending: true },
+      { id: "manga-frieren", title: "Frieren", year: 2020, category: "manga", genre: "Fantastique", rating: 8.6, duration: "Manga · en cours", director: "Kanehito Yamada et Tsukasa Abe", cast: "", description: "Après la grande aventure, l'elfe Frieren découvre le temps qui passe et entreprend un nouveau voyage pour mieux comprendre les humains qu'elle a connus.", art: "#69845b", trending: true },
+      { id: "manga-spy-family", title: "Spy x Family", year: 2019, category: "manga", genre: "Comédie", rating: 8.2, duration: "Manga · en cours", director: "Tatsuya Endo", cast: "", description: "Pour une mission secrète, l'espion Twilight fonde une famille de couverture sans savoir que sa fille adoptive est télépathe et que sa femme est une tueuse à gages.", art: "#c27a42", trending: false },
+      { id: "manga-jujutsu", title: "Jujutsu Kaisen", year: 2018, category: "manga", genre: "Action", rating: 8.3, duration: "Manga · terminé", director: "Gege Akutami", cast: "", description: "Yuji Itadori rejoint une école d'exorcisme après avoir avalé un objet maudit. Il se retrouve au cœur d'un monde où les malédictions menacent les humains.", art: "#5a527c", trending: true },
+      { id: "series-arcane", title: "Arcane", year: 2021, category: "series", genre: "Fantastique", rating: 9.0, duration: "2 saisons", director: "Christian Linke et Alex Yee", cast: "Hailee Steinfeld, Ella Purnell, Katie Leung", description: "Deux sœurs se retrouvent séparées par le conflit entre Piltover et Zaun, deux cités aux destins liés par une technologie puissante.", art: "#59477e", trending: true },
+      { id: "series-severance", title: "Severance", year: 2022, category: "series", genre: "Science-fiction", rating: 8.7, duration: "2 saisons", director: "Dan Erickson", cast: "Adam Scott, Britt Lower, Patricia Arquette", description: "Des employés ont accepté de séparer leurs souvenirs professionnels et personnels. Une énigme s'installe lorsqu'ils commencent à questionner leur travail.", art: "#397b74", trending: true },
+      { id: "series-last-of-us", title: "The Last of Us", year: 2023, category: "series", genre: "Drame", rating: 8.6, duration: "2 saisons", director: "Craig Mazin et Neil Druckmann", cast: "Pedro Pascal, Bella Ramsey", description: "Dans un monde bouleversé par une épidémie, Joel et Ellie entreprennent une traversée périlleuse et nouent un lien inattendu.", art: "#766446", trending: true },
+      { id: "series-bear", title: "The Bear", year: 2022, category: "series", genre: "Drame", rating: 8.5, duration: "4 saisons", director: "Christopher Storer", cast: "Jeremy Allen White, Ayo Edebiri, Ebon Moss-Bachrach", description: "Un jeune chef revient à Chicago pour reprendre le restaurant familial. Entre service intense et nouvelle équipe, il tente de transformer l'établissement sans perdre ses proches.", art: "#a14f39", trending: false }
+    ];
+    const allCatalogItems = [
+      ...catalogMovies.map(movie => ({ ...movie, category: "films" })),
+      ...otherCatalogItems
+    ];
+    const trendingIds = new Set([
+      "dune-2", "poor-things", "bd-asterix", "bd-blacksad", "manga-one-piece",
+      "manga-frieren", "manga-jujutsu", "series-arcane", "series-severance", "series-last-of-us"
+    ]);
+
     const posterBase = "https://image.tmdb.org/t/p/w500/";
-    const genres = ["Tous", "Action", "Aventure", "Animation", "Comédie", "Drame", "Fantastique", "Science-fiction"];
+    const genreByView = {
+      discover: ["Tous", "Action", "Aventure", "Animation", "Comédie", "Drame", "Fantastique", "Science-fiction"],
+      trending: ["Tous", "Action", "Aventure", "Comédie", "Drame", "Fantastique", "Science-fiction", "Policier"],
+      comics: ["Tous", "Aventure", "Drame", "Policier"],
+      manga: ["Tous", "Action", "Aventure", "Comédie", "Fantastique"],
+      series: ["Tous", "Drame", "Fantastique", "Science-fiction"],
+      watchlist: ["Tous", "Action", "Aventure", "Animation", "Comédie", "Drame", "Fantastique", "Science-fiction", "Policier"],
+      library: ["Tous", "Mes vidéos"]
+    };
     const icons = {
       star: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="m12 2.8 2.8 5.7 6.3.9-4.6 4.5 1.1 6.3-5.6-3-5.6 3 1.1-6.3L3 9.4l6.3-.9L12 2.8Z"/></svg>',
-      bookmark: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 4.5A1.5 1.5 0 0 1 7.5 3h9A1.5 1.5 0 0 1 18 4.5V21l-6-4-6 4V4.5Z"/></svg>'
+      bookmark: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 4.5A1.5 1.5 0 0 1 7.5 3h9A1.5 1.5 0 0 1 18 4.5V21l-6-4-6 4V4.5Z"/></svg>',
+      play: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="m10 8 6 4-6 4V8Z" fill="currentColor"/></svg>',
+      trash: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 7h16M10 11v6m4-6v6M6 7l1 14h10l1-14M9 7V4h6v3"/></svg>'
     };
     const grid = document.getElementById("movie-grid");
     const filters = document.getElementById("filters");
     const searchInput = document.getElementById("search");
     const backdrop = document.getElementById("modal-backdrop");
+    const profileBackdrop = document.getElementById("profile-backdrop");
     let activeGenre = "Tous";
     let currentView = "discover";
     let selectedMovie = null;
+    let currentMediaUrl = null;
     let toastTimer;
-    let watchlist = loadWatchlist();
+    let libraryVideos = [];
 
-    function loadWatchlist() {
+    function showToast(message) {
+      const toast = document.getElementById("toast");
+      toast.textContent = message;
+      toast.classList.add("visible");
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toast.classList.remove("visible"), 3000);
+    }
+
+    function createDefaultProfile(watchlist = []) {
+      return { id: "profile-default", name: "Mon profil", watchlist, watched: [] };
+    }
+
+    function loadProfiles() {
       try {
-        const saved = JSON.parse(localStorage.getItem("pellicule-watchlist") || "[]");
-        return Array.isArray(saved) ? saved.filter(id => movies.some(movie => movie.id === id)) : [];
+        const stored = localStorage.getItem("pellicule-profiles");
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          if (Array.isArray(parsed)) {
+            const validProfiles = parsed.filter(profile =>
+              profile && typeof profile.id === "string" && typeof profile.name === "string"
+            ).map(profile => ({
+              id: profile.id,
+              name: profile.name.slice(0, 32),
+              watchlist: Array.isArray(profile.watchlist) ? profile.watchlist.filter(id => typeof id === "string") : [],
+              watched: Array.isArray(profile.watched) ? profile.watched.filter(id => typeof id === "string") : []
+            }));
+            if (validProfiles.length) return validProfiles;
+          }
+        }
+        const legacy = JSON.parse(localStorage.getItem("pellicule-watchlist") || "[]");
+        return [createDefaultProfile(Array.isArray(legacy) ? legacy.filter(id => typeof id === "string") : [])];
       } catch {
-        showToast("La liste enregistrée n'a pas pu être lue.");
-        return [];
+        showToast("Les profils enregistrés n'ont pas pu être lus. Un profil local temporaire est utilisé.");
+        return [createDefaultProfile()];
       }
     }
 
-    function saveWatchlist() {
-      try {
-        localStorage.setItem("pellicule-watchlist", JSON.stringify(watchlist));
-      } catch {
-        showToast("La liste ne peut pas être enregistrée dans ce navigateur.");
-      }
-      updateWatchlistCount();
+    let profiles = loadProfiles();
+    let activeProfileId = "";
+    try {
+      activeProfileId = localStorage.getItem("pellicule-active-profile") || "";
+    } catch {
+      showToast("Le profil actif ne peut pas être enregistré dans ce navigateur.");
+    }
+    if (!profiles.some(profile => profile.id === activeProfileId)) activeProfileId = profiles[0].id;
+    let watchlist = getActiveProfile().watchlist;
+
+    function getActiveProfile() {
+      return profiles.find(profile => profile.id === activeProfileId) || profiles[0];
     }
 
-    function updateWatchlistCount() {
+    function saveProfiles() {
+      try {
+        localStorage.setItem("pellicule-profiles", JSON.stringify(profiles));
+        localStorage.setItem("pellicule-active-profile", activeProfileId);
+      } catch {
+        showToast("Les profils ne peuvent pas être enregistrés dans ce navigateur.");
+      }
+    }
+
+    function getAllMovies() {
+      return [...allCatalogItems, ...libraryVideos];
+    }
+
+    function openMediaDatabase() {
+      return new Promise((resolve, reject) => {
+        if (!("indexedDB" in window)) {
+          reject(new Error("Le stockage vidéo n'est pas disponible dans ce navigateur."));
+          return;
+        }
+        const request = indexedDB.open("pellicule-media", 1);
+        request.onupgradeneeded = () => {
+          const database = request.result;
+          if (!database.objectStoreNames.contains("videos")) {
+            database.createObjectStore("videos", { keyPath: "id" });
+          }
+        };
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error || new Error("Impossible d'ouvrir la médiathèque."));
+        request.onblocked = () => reject(new Error("La médiathèque est bloquée par un autre onglet."));
+      });
+    }
+
+    const mediaDatabase = openMediaDatabase();
+    mediaDatabase.catch(error => showToast(error.message));
+
+    function databaseRequest(request) {
+      return new Promise((resolve, reject) => {
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error || new Error("Erreur de lecture de la médiathèque."));
+      });
+    }
+
+    async function readAllStoredVideos() {
+      const database = await mediaDatabase;
+      const transaction = database.transaction("videos", "readonly");
+      return databaseRequest(transaction.objectStore("videos").getAll());
+    }
+
+    async function getStoredVideo(id) {
+      const database = await mediaDatabase;
+      const transaction = database.transaction("videos", "readonly");
+      return databaseRequest(transaction.objectStore("videos").get(id));
+    }
+
+    async function writeStoredVideo(record) {
+      const database = await mediaDatabase;
+      return new Promise((resolve, reject) => {
+        const transaction = database.transaction("videos", "readwrite");
+        transaction.objectStore("videos").put(record);
+        transaction.oncomplete = () => resolve();
+        transaction.onerror = () => reject(transaction.error || new Error("Impossible d'enregistrer cette vidéo."));
+        transaction.onabort = () => reject(transaction.error || new Error("Enregistrement vidéo interrompu."));
+      });
+    }
+
+    async function deleteStoredVideo(id) {
+      const database = await mediaDatabase;
+      return new Promise((resolve, reject) => {
+        const transaction = database.transaction("videos", "readwrite");
+        transaction.objectStore("videos").delete(id);
+        transaction.oncomplete = () => resolve();
+        transaction.onerror = () => reject(transaction.error || new Error("Impossible de supprimer cette vidéo."));
+        transaction.onabort = () => reject(transaction.error || new Error("Suppression interrompue."));
+      });
+    }
+
+    async function refreshLibrary() {
+      try {
+        const storedVideos = await readAllStoredVideos();
+        libraryVideos = storedVideos
+          .filter(video => video.profileId === activeProfileId)
+          .map(video => ({
+            id: video.id,
+            title: video.title,
+            year: new Date(video.addedAt).getFullYear(),
+            genre: "Mes vidéos",
+            rating: null,
+            duration: "Vidéo personnelle",
+            director: "Votre médiathèque",
+            cast: "",
+            description: "Vidéo ajoutée depuis votre appareil. Seul le fichier que vous avez sélectionné est lu et exporté.",
+            localVideo: true,
+            originalName: video.originalName,
+            size: video.size
+          }));
+      } catch (error) {
+        libraryVideos = [];
+        showToast(`Impossible de charger la médiathèque : ${error.message}`);
+      }
+      updateCounts();
+      renderFilters();
+      renderMovies();
+    }
+
+    function updateCounts() {
       document.getElementById("watchlist-count").textContent = watchlist.length;
+      document.getElementById("library-count").textContent = libraryVideos.length;
+      document.getElementById("profile-button-label").textContent = getActiveProfile().name;
     }
 
     function renderFilters() {
-      filters.innerHTML = "";
-      genres.forEach(genre => {
+      filters.replaceChildren();
+      const availableGenres = genreByView[currentView] || genreByView.discover;
+      availableGenres.forEach(genre => {
         const button = document.createElement("button");
         button.className = `filter${activeGenre === genre ? " active" : ""}`;
         button.textContent = genre;
@@ -472,146 +822,458 @@
       });
     }
 
+    function createMovieCard(movie) {
+      const card = document.createElement("article");
+      card.className = "movie-card";
+      card.tabIndex = 0;
+      card.setAttribute("aria-label", `Ouvrir ${movie.title}`);
+      const isSaved = watchlist.includes(movie.id);
+      const poster = movie.localVideo
+        ? `<div class="poster local-poster">${icons.play}<span>Vidéo personnelle</span><button class="save-button${isSaved ? " saved" : ""}" aria-label="${isSaved ? "Retirer de" : "Ajouter à"} ma liste" title="${isSaved ? "Retirer de" : "Ajouter à"} ma liste">${icons.bookmark}</button><button class="remove-video" aria-label="Supprimer ${escapeHTML(movie.title)}" title="Supprimer de ma médiathèque">${icons.trash}</button></div>`
+        : movie.category === "films"
+          ? `<div class="poster"><img src="${posterBase}${movie.poster}" alt="Affiche de ${escapeHTML(movie.title)}" loading="lazy"><span class="poster-score">${icons.star}${movie.rating.toFixed(1).replace(".", ",")}</span><button class="save-button${isSaved ? " saved" : ""}" aria-label="${isSaved ? "Retirer de" : "Ajouter à"} ma liste" title="${isSaved ? "Retirer de" : "Ajouter à"} ma liste">${icons.bookmark}</button></div>`
+          : `<div class="poster editorial-poster" style="--art-color:${movie.art}"><span class="editorial-type">${movie.category === "comics" ? "Bande dessinée" : movie.category === "manga" ? "Manga" : "Série"}</span><span class="editorial-title">${escapeHTML(movie.title)}</span><span class="editorial-author">${escapeHTML(movie.director)}</span><span class="poster-score">${icons.star}${movie.rating.toFixed(1).replace(".", ",")}</span><button class="save-button${isSaved ? " saved" : ""}" aria-label="${isSaved ? "Retirer de" : "Ajouter à"} ma liste" title="${isSaved ? "Retirer de" : "Ajouter à"} ma liste">${icons.bookmark}</button></div>`;
+      card.innerHTML = `
+        ${poster}
+        <div class="movie-info">
+          <div class="movie-title-row"><h3>${escapeHTML(movie.title)}</h3><span class="movie-year">${movie.localVideo ? "" : movie.year}</span></div>
+          <p>${escapeHTML(movie.localVideo ? "Votre vidéo" : movie.category === "comics" ? "Bande dessinée" : movie.category === "manga" ? "Manga" : movie.category === "series" ? "Série" : movie.genre)}${movie.localVideo ? "" : ` · ${movie.duration}`}</p>
+        </div>`;
+      const image = card.querySelector("img");
+      if (image) image.addEventListener("error", event => { event.currentTarget.style.visibility = "hidden"; });
+      card.querySelector(".save-button").addEventListener("click", event => {
+        event.stopPropagation();
+        toggleWatchlist(movie);
+      });
+      const removeButton = card.querySelector(".remove-video");
+      if (removeButton) removeButton.addEventListener("click", event => {
+        event.stopPropagation();
+        removePersonalVideo(movie);
+      });
+      card.addEventListener("click", () => openDetails(movie));
+      card.addEventListener("keydown", event => {
+        if ((event.key === "Enter" || event.key === " ") && !event.target.closest("button")) {
+          event.preventDefault();
+          openDetails(movie);
+        }
+      });
+      return card;
+    }
+
+    function renderCardList(items, target) {
+      target.replaceChildren(...items.map(createMovieCard));
+    }
+
+    function renderRecommendations() {
+      const section = document.getElementById("recommendations-section");
+      section.classList.remove("hidden");
+      const recommendations = allCatalogItems
+        .filter(item => Number.isFinite(item.rating))
+        .sort((first, second) => second.rating - first.rating || second.year - first.year)
+        .slice(0, 10);
+      renderCardList(recommendations, document.getElementById("recommendation-grid"));
+    }
+
     function renderMovies() {
       const query = searchInput.value.trim().toLocaleLowerCase("fr");
-      const visible = movies.filter(movie => {
+      const visible = getAllMovies().filter(movie => {
         const matchesGenre = activeGenre === "Tous" || movie.genre === activeGenre;
-        const matchesQuery = `${movie.title} ${movie.genre} ${movie.director} ${movie.cast}`.toLocaleLowerCase("fr").includes(query);
-        const matchesView = currentView !== "watchlist" || watchlist.includes(movie.id);
+        const matchesQuery = `${movie.title} ${movie.genre} ${movie.director} ${movie.cast} ${movie.description}`.toLocaleLowerCase("fr").includes(query);
+        const matchesView = currentView === "watchlist"
+          ? watchlist.includes(movie.id)
+          : currentView === "library" ? movie.localVideo === true
+            : currentView === "trending" ? !movie.localVideo && trendingIds.has(movie.id)
+              : currentView === "comics" ? movie.category === "comics"
+                : currentView === "manga" ? movie.category === "manga"
+                  : currentView === "series" ? movie.category === "series"
+                    : movie.category === "films";
         return matchesGenre && matchesQuery && matchesView;
       });
-
-      grid.innerHTML = "";
-      visible.forEach(movie => {
-        const card = document.createElement("article");
-        card.className = "movie-card";
-        card.tabIndex = 0;
-        card.setAttribute("aria-label", `Découvrir ${movie.title}, ${movie.year}`);
-        const isSaved = watchlist.includes(movie.id);
-        card.innerHTML = `
-          <div class="poster">
-            <img src="${posterBase}${movie.poster}" alt="Affiche de ${escapeHTML(movie.title)}" loading="lazy">
-            <span class="poster-score">${icons.star}${movie.rating.toFixed(1).replace(".", ",")}</span>
-            <button class="save-button${isSaved ? " saved" : ""}" aria-label="${isSaved ? "Retirer de" : "Ajouter à"} ma liste" title="${isSaved ? "Retirer de" : "Ajouter à"} ma liste">${icons.bookmark}</button>
-          </div>
-          <div class="movie-info">
-            <div class="movie-title-row"><h3>${escapeHTML(movie.title)}</h3><span class="movie-year">${movie.year}</span></div>
-            <p>${escapeHTML(movie.genre)} · ${movie.duration}</p>
-          </div>`;
-        card.querySelector("img").addEventListener("error", event => { event.currentTarget.style.visibility = "hidden"; });
-        card.querySelector(".save-button").addEventListener("click", event => {
-          event.stopPropagation();
-          toggleWatchlist(movie);
-        });
-        card.addEventListener("click", () => openDetails(movie));
-        card.addEventListener("keydown", event => {
-          if (event.key === "Enter" || event.key === " ") {
-            if (event.target.closest(".save-button")) return;
-            event.preventDefault();
-            openDetails(movie);
-          }
-        });
-        grid.append(card);
-      });
+      renderCardList(visible, grid);
 
       const empty = document.getElementById("empty-state");
       empty.classList.toggle("hidden", visible.length !== 0);
       grid.classList.toggle("hidden", visible.length === 0);
-      document.getElementById("empty-title").textContent = currentView === "watchlist" && !query
-        ? "Votre liste est vide"
-        : "Aucun film trouvé";
-      document.getElementById("empty-message").textContent = currentView === "watchlist" && !query
-        ? "Ajoutez des films avec le bouton marque-page pour les retrouver ici."
-        : "Essayez un autre titre ou changez de genre.";
-      document.getElementById("results-count").textContent = `${visible.length} film${visible.length > 1 ? "s" : ""}`;
-      document.getElementById("section-title").textContent = currentView === "watchlist" ? "Ma liste à voir" : "À découvrir";
-      document.getElementById("section-subtitle").textContent = currentView === "watchlist"
-        ? "Vos films sauvegardés, toujours à portée de main."
-        : "Une sélection pour votre prochaine séance.";
+      const viewDetails = {
+        discover: ["À découvrir", "Une sélection pour votre prochaine séance."],
+        trending: ["Tendances", "Films, BD, mangas et séries à découvrir."],
+        comics: ["Bandes dessinées", "Histoires et univers en albums et romans graphiques."],
+        manga: ["Mangas", "À la découverte des mangas et de leurs univers."],
+        series: ["Séries", "Des séries à ajouter à votre liste."],
+        watchlist: ["Ma liste à voir", "Vos favoris, tous genres confondus."],
+        library: ["Mes vidéos", "Lecture et téléchargement de vos propres fichiers vidéo."]
+      };
+      let emptyTitle = "Aucun résultat";
+      let emptyMessage = "Essayez un autre titre ou changez de genre.";
+      if (currentView === "watchlist" && !query) {
+        emptyTitle = "Votre liste est vide";
+        emptyMessage = "Ajoutez un film, une BD, un manga ou une série avec le marque-page.";
+      } else if (currentView === "library" && !query) {
+        emptyTitle = "Votre médiathèque est vide";
+        emptyMessage = "Ajoutez un fichier vidéo que vous possédez ou êtes autorisé à utiliser.";
+      } else if (currentView === "comics" && !query) {
+        emptyTitle = "Aucune bande dessinée trouvée";
+        emptyMessage = "Essayez un autre genre ou revenez plus tard.";
+      } else if (currentView === "manga" && !query) {
+        emptyTitle = "Aucun manga trouvé";
+        emptyMessage = "Essayez un autre genre ou revenez plus tard.";
+      } else if (currentView === "series" && !query) {
+        emptyTitle = "Aucune série trouvée";
+        emptyMessage = "Essayez un autre genre ou revenez plus tard.";
+      }
+      document.getElementById("empty-title").textContent = emptyTitle;
+      document.getElementById("empty-message").textContent = emptyMessage;
+      document.getElementById("results-count").textContent = `${visible.length} résultat${visible.length > 1 ? "s" : ""}`;
+      document.getElementById("section-title").textContent = viewDetails[currentView][0];
+      document.getElementById("section-subtitle").textContent = currentView === "trending"
+        ? "Sélection éditoriale de démonstration ; pas de classement en temps réel."
+        : viewDetails[currentView][1];
+      document.getElementById("curation-note").classList.toggle("hidden", currentView !== "trending");
+      document.querySelector(".hero").classList.toggle("hidden", currentView !== "discover");
+      renderRecommendations();
     }
 
     function toggleWatchlist(movie) {
-      if (watchlist.includes(movie.id)) {
-        watchlist = watchlist.filter(id => id !== movie.id);
-        showToast(`« ${movie.title} » retiré de votre liste.`);
-      } else {
-        watchlist = [...watchlist, movie.id];
-        showToast(`« ${movie.title} » ajouté à votre liste.`);
-      }
-      saveWatchlist();
+      const profile = getActiveProfile();
+      const wasSaved = watchlist.includes(movie.id);
+      watchlist = wasSaved ? watchlist.filter(id => id !== movie.id) : [...watchlist, movie.id];
+      profile.watchlist = watchlist;
+      saveProfiles();
+      showToast(`« ${movie.title} » ${wasSaved ? "retiré de" : "ajouté à"} votre liste.`);
+      updateCounts();
       renderMovies();
-      if (selectedMovie && selectedMovie.id === movie.id) updateModalButton(movie);
+      if (selectedMovie && selectedMovie.id === movie.id) updateModalButtons(movie);
     }
 
-    function openDetails(movie) {
+    function toggleWatched(movie) {
+      const profile = getActiveProfile();
+      const watched = profile.watched.includes(movie.id);
+      profile.watched = watched ? profile.watched.filter(id => id !== movie.id) : [...profile.watched, movie.id];
+      saveProfiles();
+      showToast(watched ? "Retiré de vos éléments vus." : "Ajouté à vos éléments vus.");
+      renderMovies();
+      updateModalButtons(movie);
+    }
+
+    async function openDetails(movie) {
       selectedMovie = movie;
-      document.getElementById("modal-poster").src = `${posterBase}${movie.poster}`;
-      document.getElementById("modal-poster").alt = `Affiche de ${movie.title}`;
+      const poster = document.getElementById("modal-poster");
+      const editorialCover = document.getElementById("modal-editorial-cover");
+      const player = document.getElementById("local-video-player");
+      poster.classList.toggle("hidden", movie.localVideo === true);
+      player.classList.toggle("hidden", movie.localVideo !== true);
+      editorialCover.classList.toggle("hidden", movie.localVideo || movie.category === "films");
+      if (movie.localVideo) {
+        poster.removeAttribute("src");
+        player.removeAttribute("src");
+        editorialCover.replaceChildren();
+      } else if (movie.category !== "films") {
+        poster.removeAttribute("src");
+        editorialCover.style.setProperty("--art-color", movie.art);
+        editorialCover.innerHTML = `<span>${movie.category === "comics" ? "Bande dessinée" : movie.category === "manga" ? "Manga" : "Série"}</span><strong>${escapeHTML(movie.title)}</strong><span>${escapeHTML(movie.director)}</span>`;
+      } else {
+        poster.src = `${posterBase}${movie.poster}`;
+        poster.alt = `Affiche de ${movie.title}`;
+      }
       document.getElementById("modal-title").textContent = movie.title;
-      document.getElementById("modal-meta").innerHTML =
-        `<span class="rating">★ ${movie.rating.toFixed(1).replace(".", ",")}</span><span>${movie.year}</span><span>${movie.duration}</span><span>${escapeHTML(movie.genre)}</span>`;
+      document.getElementById("modal-meta").innerHTML = movie.localVideo
+        ? "<span>Vidéo personnelle</span><span>Ajoutée à votre médiathèque</span>"
+        : `<span class="rating">★ ${movie.rating.toFixed(1).replace(".", ",")}</span><span>${movie.year}</span><span>${movie.duration}</span><span>${escapeHTML(movie.genre)}</span>`;
       document.getElementById("modal-description").textContent = movie.description;
       document.getElementById("modal-director").textContent = movie.director;
-      document.getElementById("modal-cast").textContent = movie.cast;
-      updateModalButton(movie);
+      document.getElementById("modal-cast").textContent = movie.localVideo ? "—" : movie.cast;
+      document.getElementById("modal-creator-label").textContent = movie.category === "comics" || movie.category === "manga"
+        ? "Auteur·rice(s) :" : movie.localVideo ? "Origine :" : "Réalisation :";
+      document.getElementById("modal-cast-label").textContent = movie.category === "series" ? "Distribution :" : "Avec :";
+      document.getElementById("modal-cast-line").classList.toggle("hidden", !movie.cast);
+      document.getElementById("modal-watched").classList.toggle("hidden", movie.localVideo === true);
+      document.getElementById("modal-download").classList.toggle("hidden", movie.localVideo !== true);
+      document.getElementById("modal-delete-video").classList.toggle("hidden", movie.localVideo !== true);
+      updateModalButtons(movie);
       backdrop.classList.remove("hidden");
       document.body.style.overflow = "hidden";
       document.getElementById("close-modal").focus();
+      if (movie.localVideo) {
+        try {
+          const storedVideo = await getStoredVideo(movie.id);
+          if (!selectedMovie || selectedMovie.id !== movie.id) return;
+          if (!storedVideo || !(storedVideo.blob instanceof Blob)) {
+            throw new Error("Le fichier vidéo est introuvable dans le stockage local.");
+          }
+          currentMediaUrl = URL.createObjectURL(storedVideo.blob);
+          player.src = currentMediaUrl;
+        } catch (error) {
+          showToast(`Impossible de lire la vidéo : ${error.message}`);
+        }
+      }
     }
 
-    function updateModalButton(movie) {
-      const button = document.getElementById("modal-watchlist");
+    function updateModalButtons(movie) {
       const saved = watchlist.includes(movie.id);
-      button.innerHTML = `${icons.bookmark}${saved ? "Retirer de ma liste" : "Ajouter à ma liste"}`;
+      const watchlistButton = document.getElementById("modal-watchlist");
+      watchlistButton.innerHTML = `${icons.bookmark}${saved ? "Retirer de ma liste" : "Ajouter à ma liste"}`;
+      const watchedButton = document.getElementById("modal-watched");
+      const watched = getActiveProfile().watched.includes(movie.id);
+      watchedButton.textContent = watched ? "Déjà vu ✓" : "Marquer comme vu";
     }
 
     function closeDetails() {
+      const player = document.getElementById("local-video-player");
+      player.pause();
+      player.removeAttribute("src");
+      player.load();
+      if (currentMediaUrl) URL.revokeObjectURL(currentMediaUrl);
+      currentMediaUrl = null;
       backdrop.classList.add("hidden");
-      document.body.style.overflow = "";
+      document.body.style.overflow = profileBackdrop.classList.contains("hidden") ? "" : "hidden";
       selectedMovie = null;
     }
 
-    function showToast(message) {
-      const toast = document.getElementById("toast");
-      toast.textContent = message;
-      toast.classList.add("visible");
-      clearTimeout(toastTimer);
-      toastTimer = setTimeout(() => toast.classList.remove("visible"), 2400);
+    async function addVideoFiles(files) {
+      const supportedExtensions = /\.(mp4|m4v|mov|webm|ogv|ogg|avi|mkv)$/i;
+      const validFiles = [...files].filter(file => file.type.startsWith("video/") || supportedExtensions.test(file.name));
+      if (!validFiles.length) {
+        showToast("Sélectionnez un fichier vidéo que vous êtes autorisé à utiliser.");
+        return;
+      }
+      for (const file of validFiles) {
+        const title = file.name.replace(/\.[^.]+$/, "") || file.name;
+        const id = `local-${crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random().toString(16).slice(2)}`}`;
+        try {
+          await writeStoredVideo({
+            id,
+            profileId: activeProfileId,
+            title,
+            originalName: file.name,
+            type: file.type || "application/octet-stream",
+            size: file.size,
+            addedAt: Date.now(),
+            blob: file
+          });
+        } catch (error) {
+          showToast(`Impossible d'enregistrer « ${title} » : ${error.message || "espace de stockage insuffisant."}`);
+          continue;
+        }
+      }
+      await refreshLibrary();
+      setView("library");
     }
 
-    function setView(view) {
-      currentView = view;
+    async function downloadPersonalVideo() {
+      if (!selectedMovie || !selectedMovie.localVideo) return;
+      try {
+        const record = await getStoredVideo(selectedMovie.id);
+        if (!record || !(record.blob instanceof Blob)) throw new Error("Le fichier original est introuvable.");
+        const downloadUrl = URL.createObjectURL(record.blob);
+        const link = document.createElement("a");
+        link.href = downloadUrl;
+        link.download = record.originalName || `${record.title}.mp4`;
+        document.body.append(link);
+        link.click();
+        link.remove();
+        setTimeout(() => URL.revokeObjectURL(downloadUrl), 60000);
+        showToast("Téléchargement de votre fichier lancé.");
+      } catch (error) {
+        showToast(`Téléchargement impossible : ${error.message}`);
+      }
+    }
+
+    async function removePersonalVideo(movie) {
+      if (!window.confirm(`Supprimer « ${movie.title} » de cette médiathèque ?`)) return;
+      try {
+        await deleteStoredVideo(movie.id);
+        watchlist = watchlist.filter(id => id !== movie.id);
+        const profile = getActiveProfile();
+        profile.watchlist = watchlist;
+        profile.watched = profile.watched.filter(id => id !== movie.id);
+        saveProfiles();
+        if (selectedMovie && selectedMovie.id === movie.id) closeDetails();
+        await refreshLibrary();
+        showToast("Vidéo supprimée de cette médiathèque.");
+      } catch (error) {
+        showToast(`Suppression impossible : ${error.message}`);
+      }
+    }
+
+    function openProfileDialog() {
+      renderProfiles();
+      profileBackdrop.classList.remove("hidden");
+      document.body.style.overflow = "hidden";
+      document.getElementById("new-profile-name").focus();
+    }
+
+    function closeProfileDialog() {
+      profileBackdrop.classList.add("hidden");
+      document.body.style.overflow = backdrop.classList.contains("hidden") ? "" : "hidden";
+    }
+
+    function renderProfiles() {
+      const list = document.getElementById("profile-list");
+      list.replaceChildren();
+      profiles.forEach(profile => {
+        const button = document.createElement("button");
+        button.className = `profile-choice${profile.id === activeProfileId ? " active" : ""}`;
+        button.type = "button";
+        button.innerHTML = `<span class="profile-avatar">${escapeHTML(profile.name.charAt(0).toLocaleUpperCase("fr"))}</span><span>${escapeHTML(profile.name)}</span>${profile.id === activeProfileId ? "<small>Actif</small>" : ""}`;
+        button.addEventListener("click", () => switchProfile(profile.id));
+        list.append(button);
+      });
+    }
+
+    async function switchProfile(id) {
+      if (!profiles.some(profile => profile.id === id)) return;
+      activeProfileId = id;
+      watchlist = getActiveProfile().watchlist;
+      saveProfiles();
+      closeProfileDialog();
       activeGenre = "Tous";
-      document.querySelectorAll(".nav-button").forEach(button => button.classList.toggle("active", button.dataset.view === view));
-      document.getElementById("breadcrumb-current").textContent = view === "watchlist" ? "Ma liste" : "Explorer";
       renderFilters();
-      renderMovies();
+      updateCounts();
+      await refreshLibrary();
     }
 
-    function escapeHTML(value) {
-      return value.replace(/[&<>"']/g, character => ({
-        "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
-      })[character]);
-    }
-
-    document.querySelectorAll(".nav-button").forEach(button => button.addEventListener("click", () => setView(button.dataset.view)));
+    document.querySelectorAll("[data-view]").forEach(button => button.addEventListener("click", () => setView(button.dataset.view)));
     searchInput.addEventListener("input", renderMovies);
-    document.getElementById("hero-details").addEventListener("click", () => openDetails(movies[0]));
+    document.getElementById("hero-details").addEventListener("click", () => openDetails(catalogMovies[0]));
     document.getElementById("close-modal").addEventListener("click", closeDetails);
     document.getElementById("modal-close-secondary").addEventListener("click", closeDetails);
     document.getElementById("modal-watchlist").addEventListener("click", () => {
       if (selectedMovie) toggleWatchlist(selectedMovie);
     });
+    document.getElementById("modal-watched").addEventListener("click", () => {
+      if (selectedMovie && !selectedMovie.localVideo) toggleWatched(selectedMovie);
+    });
+    document.getElementById("modal-download").addEventListener("click", downloadPersonalVideo);
+    document.getElementById("modal-delete-video").addEventListener("click", () => {
+      if (selectedMovie && selectedMovie.localVideo) removePersonalVideo(selectedMovie);
+    });
+    document.getElementById("add-video-button").addEventListener("click", () => document.getElementById("video-input").click());
+    document.getElementById("video-input").addEventListener("change", async event => {
+      await addVideoFiles(event.currentTarget.files);
+      event.currentTarget.value = "";
+    });
+    document.getElementById("profile-button").addEventListener("click", openProfileDialog);
+    document.getElementById("close-profile").addEventListener("click", closeProfileDialog);
+    document.getElementById("profile-form").addEventListener("submit", event => {
+      event.preventDefault();
+      const input = document.getElementById("new-profile-name");
+      const name = input.value.trim();
+      if (!name) return;
+      if (profiles.some(profile => profile.name.toLocaleLowerCase("fr") === name.toLocaleLowerCase("fr"))) {
+        showToast("Un profil porte déjà ce nom.");
+        return;
+      }
+      const profile = {
+        id: `profile-${crypto.randomUUID ? crypto.randomUUID() : Date.now()}`,
+        name,
+        watchlist: [],
+        watched: []
+      };
+      profiles.push(profile);
+      input.value = "";
+      switchProfile(profile.id);
+    });
     backdrop.addEventListener("click", event => {
       if (event.target === backdrop) closeDetails();
     });
+    profileBackdrop.addEventListener("click", event => {
+      if (event.target === profileBackdrop) closeProfileDialog();
+    });
     document.addEventListener("keydown", event => {
       if (event.key === "Escape" && !backdrop.classList.contains("hidden")) closeDetails();
+      else if (event.key === "Escape" && !profileBackdrop.classList.contains("hidden")) closeProfileDialog();
     });
 
-    updateWatchlistCount();
-    renderFilters();
-    renderMovies();
+    function setView(view) {
+      currentView = view;
+      activeGenre = "Tous";
+      document.querySelectorAll("[data-view]").forEach(button => button.classList.toggle("active", button.dataset.view === view));
+      document.getElementById("breadcrumb-current").textContent = view === "watchlist"
+        ? "Ma liste" : view === "library" ? "Mes vidéos" : viewDetailsForNavigation(view);
+      renderFilters();
+      renderMovies();
+    }
+
+    function viewDetailsForNavigation(view) {
+      return {
+        discover: "Films", trending: "Tendances", comics: "Bandes dessinées",
+        manga: "Mangas", series: "Séries"
+      }[view] || "Explorer";
+    }
+
+    function escapeHTML(value) {
+      return String(value).replace(/[&<>"']/g, character => ({
+        "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+      })[character]);
+    }
+
+    async function initialize() {
+      updateCounts();
+      renderFilters();
+      renderMovies();
+      try {
+        const storedVideos = await readAllStoredVideos();
+        libraryVideos = storedVideos
+          .filter(video => video.profileId === activeProfileId)
+          .map(video => ({
+            id: video.id, title: video.title, year: new Date(video.addedAt).getFullYear(),
+            genre: "Mes vidéos", rating: null, duration: "Vidéo personnelle",
+            director: "Votre médiathèque", cast: "",
+            description: "Vidéo ajoutée depuis votre appareil. Seul le fichier que vous avez sélectionné est lu et exporté.",
+            localVideo: true, originalName: video.originalName, size: video.size
+          }));
+      } catch (error) {
+        showToast(`La médiathèque n'est pas accessible : ${error.message}`);
+      }
+      saveProfiles();
+      updateCounts();
+      renderMovies();
+    }
+
+    initialize();
+
+    let installPrompt = null;
+    const installButton = document.getElementById("install-button");
+    window.addEventListener("beforeinstallprompt", event => {
+      event.preventDefault();
+      installPrompt = event;
+    });
+    installButton.addEventListener("click", async () => {
+      if (window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone) {
+        showToast("Vidéobox est déjà installée sur cet appareil.");
+        return;
+      }
+      if (location.protocol !== "https:" && location.hostname !== "localhost" && location.hostname !== "127.0.0.1") {
+        showToast("Pour installer Vidéobox, le site doit d'abord être publié en HTTPS, par exemple sur GitHub Pages.");
+        return;
+      }
+      if (installPrompt) {
+        try {
+          await installPrompt.prompt();
+          const choice = await installPrompt.userChoice;
+          showToast(choice.outcome === "accepted"
+            ? "Installation de Vidéobox lancée."
+            : "Installation annulée. Vous pourrez réessayer plus tard.");
+        } catch (error) {
+          showToast(`L'installation n'a pas pu démarrer : ${error.message}`);
+        } finally {
+          installPrompt = null;
+        }
+        return;
+      }
+      showToast("Pour installer Vidéobox : ouvrez le menu du navigateur, puis choisissez « Installer l'application » ou « Ajouter à l'écran d'accueil ».");
+    });
+    window.addEventListener("appinstalled", () => {
+      installPrompt = null;
+      showToast("Vidéobox est installée sur cet appareil.");
+    });
+
+    if ("serviceWorker" in navigator && location.protocol !== "file:") {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("./service-worker.js")
+          .catch(error => showToast(`L'installation hors ligne n'a pas pu démarrer : ${error.message}`));
+      });
+    }
   </script>
 </body>
 </html>
