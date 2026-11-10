@@ -27,6 +27,21 @@ Vidéobox est préparée comme une application web installable (PWA). Une fois p
 
 L'ouverture directe du fichier `index.html` ne permet pas l'installation : le site doit d'abord être hébergé en HTTPS. GitHub Pages peut servir de site de téléchargement/installation web, mais ne publie pas automatiquement l'application dans les boutiques. Google Play, l'App Store et les autres boutiques sont des soumissions distinctes : elles demandent un emballage adapté à chaque plateforme, les comptes développeur correspondants, et l'approbation de chaque boutique. Il n'existe pas de publication automatique sur « tous » les sites ou canaux.
 
+## Préparation des applications mobiles
+
+Le projet utilise Capacitor pour préparer des applications Android et iOS à partir de la même interface web. L'identifiant natif choisi est `com.kadinadav.videobox`; il doit rester le même après la première publication sur les boutiques.
+
+Capacitor 8 nécessite Node.js 22 ou plus récent. La compilation Android nécessite Android Studio et le SDK Android. La compilation iOS nécessite macOS, Xcode 26 ou plus récent et les outils de ligne de commande Xcode. Ces outils ne sont pas installés sur le PC Windows utilisé pour préparer ce dépôt; la version iOS doit être générée sur le Mac.
+
+Après avoir installé Node.js, dans un terminal ouvert à la racine du dépôt :
+
+1. `npm install`
+2. `npm run cap:add:android` et `npm run cap:add:ios` une seule fois pour créer les projets natifs.
+3. `npm run cap:sync` après chaque changement de l'application web.
+4. `npm run cap:open:android` dans Android Studio, ou `npm run cap:open:ios` sur Mac dans Xcode, pour tester, signer et préparer l'envoi aux boutiques.
+
+La création des projets natifs, la signature et l'envoi sur Google Play ou l'App Store ne sont pas effectués par le déploiement GitHub Pages. Chaque boutique examine l'application séparément et peut demander des informations, des visuels, une politique de confidentialité et des modifications avant de l'accepter. La présence de catalogues de démonstration et le fait que l'application soit un emballage web peuvent nécessiter des améliorations avant l'examen.
+
 ## Publication GitHub Pages
 
 Le workflow `.github/workflows/pages.yml` publie automatiquement le site lors d'un push sur les branches `application` ou `main`.

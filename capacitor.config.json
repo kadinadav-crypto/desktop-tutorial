@@ -1,0 +1,7 @@
+{
+  "appId": "com.kadinadav.videobox",
+  "appName": "Vidéobox",
+  "webDir": "www",
+  "backgroundColor": "#08090c",
+  "loggingBehavior": "none"
+}
