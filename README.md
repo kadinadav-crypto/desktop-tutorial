@@ -10,8 +10,10 @@ Application web de découverte de films, bandes dessinées, mangas et séries, a
 - Profils locaux avec listes « À voir » et historique des films vus séparés.
 - Suivi des épisodes d'anime vus, conservé par profil dans ce navigateur.
 - Top 10 toujours visible : films, séries, anime, BD et mangas classés selon les notes de démonstration.
-- Import, lecture et téléchargement des fichiers vidéo choisis depuis votre appareil.
-- Interface mobile sombre avec rubriques défilantes, affiches horizontales et navigation fixe en bas.
+- Import, lecture et export de fichiers vidéo personnels depuis la rubrique Téléchargements.
+- Rubrique Short TV pour parcourir rapidement les nouveautés du catalogue sans diffuser les œuvres.
+- Espace Mon profil avec les goûts déduits de la liste, les éléments marqués comme vus et le changement de profil local.
+- Accueil mobile inspiré des captures fournies : recherche en haut, rubriques défilantes, bannière, carrousels de classements et navigation fixe en bas.
 
 ## Utilisation
 
