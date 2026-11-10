@@ -6,17 +6,18 @@ Application web de découverte de films, bandes dessinées, mangas et séries, a
 
 - Catalogue de démonstration, recherche, filtres et fiches détaillées.
 - Rubriques Tendances, Bandes dessinées, Mangas et Séries, avec une sélection éditoriale.
-- Catalogue Anime avec recherche, fiches, genres et raccourci de recherche de disponibilité auprès de services légaux.
+- Catalogue Anime avec recherche, fiches, genres et liens pour rechercher les offres de services officiels.
 - Profils locaux avec listes « À voir » et historique des films vus séparés.
 - Suivi des épisodes d'anime vus, conservé par profil dans ce navigateur.
 - Top 10 toujours visible : films, séries, anime, BD et mangas classés selon les notes de démonstration.
 - Import, lecture et téléchargement des fichiers vidéo choisis depuis votre appareil.
+- Interface mobile sombre avec rubriques défilantes, affiches horizontales et navigation fixe en bas.
 
 ## Utilisation
 
 Ouvrir `index.html` dans un navigateur récent. Aucune installation ni serveur n'est nécessaire. Une connexion Internet est requise pour les affiches du catalogue. Les profils et listes sont conservés dans le stockage local du navigateur ; les vidéos importées sont stockées dans IndexedDB sur cet appareil et peuvent utiliser beaucoup d'espace. Pour synchroniser des comptes entre appareils, il faudrait ajouter un service serveur avec authentification.
 
-Les profils ne sont pas des comptes sécurisés et ne sont pas synchronisés. Les tendances et notes du Top 10 sont des exemples de démonstration, pas des classements mis à jour en temps réel. Seuls les fichiers ajoutés par l'utilisateur sont lus ou téléchargés ; ajoutez uniquement des vidéos que vous possédez ou êtes autorisé à utiliser. Le catalogue n'intègre aucune lecture ni aucun téléchargement de films, séries ou autres contenus tiers.
+Les profils ne sont pas des comptes sécurisés et ne sont pas synchronisés. Les tendances et notes du Top 10 sont des exemples de démonstration, pas des classements mis à jour en temps réel. La fiche des films, séries et anime permet de chercher les offres disponibles auprès de services officiels ; si un service propose le téléchargement hors ligne, utilisez sa propre application et ses conditions. Vidéobox ne télécharge pas les contenus du catalogue. Vous pouvez lire et télécharger les fichiers vidéo que vous ajoutez et êtes autorisé à utiliser.
 
 ## Installation depuis un site
 
