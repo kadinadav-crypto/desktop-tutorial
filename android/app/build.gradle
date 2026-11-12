@@ -1,8 +1,31 @@
 apply plugin: 'com.android.application'
 
+def releaseSigningProperties = [
+    storeFile: providers.gradleProperty('videoboxUploadStoreFile').orNull,
+    storePassword: providers.gradleProperty('videoboxUploadStorePassword').orNull,
+    keyAlias: providers.gradleProperty('videoboxUploadKeyAlias').orNull,
+    keyPassword: providers.gradleProperty('videoboxUploadKeyPassword').orNull
+]
+def releaseSigningConfigured = releaseSigningProperties.values().every { it }
+def releaseSigningPartiallyConfigured = releaseSigningProperties.values().any { it }
+
+if (releaseSigningPartiallyConfigured && !releaseSigningConfigured) {
+    throw new GradleException('Android release signing requires all videoboxUpload* properties in the user Gradle properties file.')
+}
+
 android {
     namespace = "com.kadinadav.videobox"
     compileSdk = rootProject.ext.compileSdkVersion
+    signingConfigs {
+        if (releaseSigningConfigured) {
+            release {
+                storeFile rootProject.file(releaseSigningProperties.storeFile)
+                storePassword releaseSigningProperties.storePassword
+                keyAlias releaseSigningProperties.keyAlias
+                keyPassword releaseSigningProperties.keyPassword
+            }
+        }
+    }
     defaultConfig {
         applicationId "com.kadinadav.videobox"
         minSdkVersion rootProject.ext.minSdkVersion
@@ -18,6 +41,9 @@ android {
     }
     buildTypes {
         release {
+            if (releaseSigningConfigured) {
+                signingConfig signingConfigs.release
+            }
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
@@ -51,4 +77,21 @@ try {
     }
 } catch(Exception e) {
     logger.info("google-services.json not found, google-services plugin not applied. Push Notifications won't work")
+}
+
+def validateReleaseSigning = tasks.register('validateReleaseSigning') {
+    doLast {
+        if (!releaseSigningConfigured) {
+            throw new GradleException('Configure the videoboxUpload* properties in the user Gradle properties file before building a release.')
+        }
+        if (!rootProject.file(releaseSigningProperties.storeFile).isFile()) {
+            throw new GradleException('The Android upload keystore configured in the user Gradle properties file was not found.')
+        }
+    }
+}
+
+tasks.configureEach {
+    if (name == 'bundleRelease' || name == 'assembleRelease') {
+        dependsOn(validateReleaseSigning)
+    }
 }

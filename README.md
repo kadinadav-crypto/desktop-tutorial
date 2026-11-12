@@ -30,6 +30,7 @@ L'ouverture directe du fichier `index.html` ne permet pas l'installation : le si
 ## Préparation des applications mobiles
 
 Le projet utilise Capacitor pour préparer des applications Android et iOS à partir de la même interface web. L'identifiant natif choisi est `com.kadinadav.videobox`; il doit rester le même après la première publication sur les boutiques.
+La politique de confidentialité est publiée avec le site à `https://kadinadav-crypto.github.io/desktop-tutorial/privacy.html` et est également accessible depuis la rubrique Mon profil.
 
 Capacitor 8 nécessite Node.js 22 ou plus récent. La compilation Android nécessite Android Studio et le SDK Android. La compilation iOS nécessite macOS, Xcode 26 ou plus récent et les outils de ligne de commande Xcode. Ces outils ne sont pas installés sur le PC Windows utilisé pour préparer ce dépôt; la version iOS doit être générée sur le Mac.
 
@@ -41,6 +42,14 @@ Après avoir installé Node.js, dans un terminal ouvert à la racine du dépôt 
 4. `npm run cap:open:android` dans Android Studio, ou `npm run cap:open:ios` sur Mac dans Xcode, pour tester, signer et préparer l'envoi aux boutiques.
 
 La création des projets natifs, la signature et l'envoi sur Google Play ou l'App Store ne sont pas effectués par le déploiement GitHub Pages. Chaque boutique examine l'application séparément et peut demander des informations, des visuels, une politique de confidentialité et des modifications avant de l'accepter. La présence de catalogues de démonstration et le fait que l'application soit un emballage web peuvent nécessiter des améliorations avant l'examen.
+
+### Préparer une version Android pour Google Play
+
+L'APK `app-debug.apk` sert uniquement aux essais et ne doit pas être envoyé sur Google Play. La boutique attend un Android App Bundle (`.aab`) signé avec une clé d'envoi. La clé privée et ses mots de passe doivent rester hors du dépôt Git et être sauvegardés dans un endroit sûr : les versions futures devront conserver le même identifiant d'application et la même clé d'envoi.
+
+Sur Windows, les propriétés de signature sont conservées dans `%USERPROFILE%\.gradle\gradle.properties` et le fichier de clé dans `%USERPROFILE%\.android\`. Ne partagez pas ces fichiers et ne les ajoutez jamais à Git. Depuis le dossier `android`, exécutez `.\gradlew.bat bundleRelease`. Le fichier créé se trouve dans `app\build\outputs\bundle\release\app-release.aab`.
+
+La création du bundle ne publie pas l'application. Avant l'envoi dans Play Console, il faut notamment compléter la fiche de la boutique, les déclarations de contenu et de données, ainsi qu'une politique de confidentialité accessible en ligne.
 
 ## Publication GitHub Pages
 

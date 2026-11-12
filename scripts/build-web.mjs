@@ -6,6 +6,7 @@ const projectRoot = resolve(fileURLToPath(new URL("..", import.meta.url)));
 const webDirectory = resolve(projectRoot, "www");
 const webAssets = [
   "index.html",
+  "privacy.html",
   "site.webmanifest",
   "service-worker.js",
   "favicon.svg",

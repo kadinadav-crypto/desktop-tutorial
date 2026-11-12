@@ -1,6 +1,7 @@
-const CACHE_NAME = "videobox-shell-v1";
+const CACHE_NAME = "videobox-shell-v2";
 const APP_SHELL = [
   "./index.html",
+  "./privacy.html",
   "./site.webmanifest",
   "./favicon.svg",
   "./icon-192.png",
